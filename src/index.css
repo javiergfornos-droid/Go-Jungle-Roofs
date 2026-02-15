@@ -22,3 +22,32 @@
     -moz-osx-font-smoothing: grayscale;
   }
 }
+
+/* ── Range slider (dark track + neon-pink thumb) ── */
+.jr-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  outline: none;
+}
+.jr-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ff10f0;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(255, 16, 240, 0.5);
+}
+.jr-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ff10f0;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(255, 16, 240, 0.5);
+}
