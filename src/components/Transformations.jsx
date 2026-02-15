@@ -8,9 +8,9 @@ const projects = [
     location: 'Madrid, Spain',
     area: '120 m²',
     images: {
-      before: '/images/project1-before.svg',
-      during: '/images/project1-during.svg',
-      after: '/images/project1-after.svg',
+      before: '/images/project1-before.jpg',
+      during: '/images/project1-during.jpg',
+      after: '/images/project1-after.jpg',
     },
   },
   {
@@ -20,9 +20,9 @@ const projects = [
     location: 'Barcelona, Spain',
     area: '850 m²',
     images: {
-      before: '/images/project2-before.svg',
-      during: '/images/project2-during.svg',
-      after: '/images/project2-after.svg',
+      before: '/images/project2-before.jpg',
+      during: '/images/project2-during.jpg',
+      after: '/images/project2-after.jpg',
     },
   },
   {
@@ -32,9 +32,9 @@ const projects = [
     location: 'Lisbon, Portugal',
     area: '400 m²',
     images: {
-      before: '/images/project3-before.svg',
-      during: '/images/project3-during.svg',
-      after: '/images/project3-after.svg',
+      before: '/images/project3-before.jpg',
+      during: '/images/project3-during.jpg',
+      after: '/images/project3-after.jpg',
     },
   },
 ];
