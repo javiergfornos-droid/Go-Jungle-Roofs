@@ -19,13 +19,13 @@ function calcArea(pts) {
 }
 
 /* ── Form option lists ── */
-const ASSET_TYPES = ['Residencial', 'Oficina', 'Hotel', 'Industrial', 'Comercial'];
-const ROLE_OPTIONS = ['Propietario', 'Presidente', 'Inquilino', 'Administrador'];
-const TIME_OPTIONS = ['< 6 meses', '6 meses - 2 años', '+ 2 años'];
-const OBJECTIVE_OPTIONS = ['Reparar problema', 'Espacio aprovechable', 'Proyecto verde'];
-const TIMELINE_OPTIONS = ['Urgente', '6 meses', 'Sin fecha'];
+const ASSET_TYPES = ['Residential', 'Office', 'Hotel', 'Industrial', 'Commercial'];
+const ROLE_OPTIONS = ['Owner', 'President', 'Tenant', 'Administrator'];
+const TIME_OPTIONS = ['< 6 months', '6 months - 2 years', '+ 2 years'];
+const OBJECTIVE_OPTIONS = ['Fix a problem', 'Usable space', 'Green project'];
+const TIMELINE_OPTIONS = ['Urgent', '6 months', 'No date'];
 
-const ROLE_LABELS = { pioneer: 'Pionero', sponsor: 'Patrocinador', host: 'Anfitrión' };
+const ROLE_LABELS = { pioneer: 'Pioneer', sponsor: 'Sponsor', host: 'Host' };
 
 /* ── Leaflet vertex icon ── */
 const VERTEX_ICON = L.divIcon({
@@ -177,7 +177,8 @@ export default function MapCalculator({ role, onBack }) {
   const handleSubmit = () => {
     if (!isComplete) return;
     console.log('Submit', { ...form, assetCategory, energyBill, area, role, vertices });
-    alert('¡Gracias! Te enviaremos tu presupuesto pronto.');
+    alert('Thank you! We will send you your personal budget soon.');
+    onBack();
   };
 
   /* ================================================================== */
@@ -195,15 +196,15 @@ export default function MapCalculator({ role, onBack }) {
             hover:bg-white/20 transition-colors cursor-pointer"
         >
           <ArrowLeft size={16} />
-          Volver
+          Back
         </button>
 
         {/* Floating toolbar */}
         <div className="absolute left-4 top-1/2 -translate-y-1/2 z-[1000] flex flex-col gap-3">
           {[
-            { Icon: Undo2, action: handleUndo, label: 'Deshacer', disabled: vertices.length === 0 },
-            { Icon: Pencil, action: () => setEditMode((p) => !p), label: 'Editar', active: editMode },
-            { Icon: Trash2, action: handleTrash, label: 'Borrar', disabled: vertices.length === 0 },
+            { Icon: Undo2, action: handleUndo, label: 'Undo', disabled: vertices.length === 0 },
+            { Icon: Pencil, action: () => setEditMode((p) => !p), label: 'Edit', active: editMode },
+            { Icon: Trash2, action: handleTrash, label: 'Trash', disabled: vertices.length === 0 },
             { Icon: Info, action: () => setShowInfo((p) => !p), label: 'Info', active: showInfo },
           ].map(({ Icon, action, label, disabled, active }) => (
             <button
@@ -224,9 +225,9 @@ export default function MapCalculator({ role, onBack }) {
         {/* Info overlay */}
         {showInfo && (
           <div className="absolute bottom-4 left-4 right-4 z-[1000] p-4 rounded-xl backdrop-blur-md bg-black/60 border border-white/20 text-white text-sm">
-            <p><strong>Vértices:</strong> {vertices.length}</p>
-            <p><strong>Superficie:</strong> {area.toFixed(1)} m²</p>
-            <p className="text-white/60 mt-1 text-xs">Haz clic en el mapa para dibujar tu tejado</p>
+            <p><strong>Vertices:</strong> {vertices.length}</p>
+            <p><strong>Surface area:</strong> {area.toFixed(1)} m²</p>
+            <p className="text-white/60 mt-1 text-xs">Click on the map to draw your rooftop</p>
           </div>
         )}
 
@@ -248,7 +249,7 @@ export default function MapCalculator({ role, onBack }) {
 
           {/* Header */}
           <div>
-            <h2 className="text-2xl font-bold">Superficie disponible</h2>
+            <h2 className="text-2xl font-bold">Available Surface</h2>
             <p className="text-4xl font-extrabold text-[#FF10F0] mt-1">
               {area.toFixed(1)} <span className="text-lg font-medium text-white/60">m²</span>
             </p>
@@ -256,11 +257,11 @@ export default function MapCalculator({ role, onBack }) {
 
           {/* ── Calculator ── */}
           <section className="space-y-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/50">Calculadora</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/50">Calculator</h3>
 
             {/* Asset category cards */}
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-3">Tipo de inmueble</label>
+              <label className="block text-sm font-medium text-white/70 mb-3">Property type</label>
               <div className="grid grid-cols-2 gap-3">
                 {['Unifamiliar', 'Comunidad'].map((cat) => (
                   <button
@@ -280,7 +281,7 @@ export default function MapCalculator({ role, onBack }) {
             {/* Energy bill slider */}
             <div>
               <label className="block text-sm font-medium text-white/70 mb-3">
-                Factura energética mensual: <span className="text-white font-bold">{energyBill}€</span>
+                Monthly energy bill: <span className="text-white font-bold">{energyBill}€</span>
               </label>
               <input
                 type="range"
@@ -299,33 +300,33 @@ export default function MapCalculator({ role, onBack }) {
 
           {/* ── Questionnaire ── */}
           <section className="space-y-5">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/50">Datos del proyecto</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/50">Project Details</h3>
 
             <div className="grid grid-cols-2 gap-3">
-              <InputField label="Nombre" value={form.name} onChange={(v) => set('name', v)} />
-              <InputField label="Apellido" value={form.surname} onChange={(v) => set('surname', v)} />
+              <InputField label="Name" value={form.name} onChange={(v) => set('name', v)} />
+              <InputField label="Surname" value={form.surname} onChange={(v) => set('surname', v)} />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <InputField label="Email" type="email" value={form.email} onChange={(v) => set('email', v)} />
-              <InputField label="Teléfono" type="tel" value={form.phone} onChange={(v) => set('phone', v)} />
+              <InputField label="Phone" type="tel" value={form.phone} onChange={(v) => set('phone', v)} />
             </div>
 
-            <InputField label="Dirección del edificio" value={form.address} onChange={(v) => set('address', v)} />
+            <InputField label="Building Address" value={form.address} onChange={(v) => set('address', v)} />
 
-            <SelectField label="Tipo de activo" value={form.assetType} onChange={(v) => set('assetType', v)} options={ASSET_TYPES} />
-            <SelectField label="Rol" value={form.buildingRole} onChange={(v) => set('buildingRole', v)} options={ROLE_OPTIONS} />
+            <SelectField label="Asset Type" value={form.assetType} onChange={(v) => set('assetType', v)} options={ASSET_TYPES} />
+            <SelectField label="Role" value={form.buildingRole} onChange={(v) => set('buildingRole', v)} options={ROLE_OPTIONS} />
 
-            <RadioGroup label="Tiempo vinculado al edificio" value={form.timeLinked} onChange={(v) => set('timeLinked', v)} options={TIME_OPTIONS} />
-            <RadioGroup label="Objetivo principal" value={form.objective} onChange={(v) => set('objective', v)} options={OBJECTIVE_OPTIONS} />
-            <RadioGroup label="Plazo" value={form.timeline} onChange={(v) => set('timeline', v)} options={TIMELINE_OPTIONS} />
+            <RadioGroup label="Time linked to building" value={form.timeLinked} onChange={(v) => set('timeLinked', v)} options={TIME_OPTIONS} />
+            <RadioGroup label="Primary Objective" value={form.objective} onChange={(v) => set('objective', v)} options={OBJECTIVE_OPTIONS} />
+            <RadioGroup label="Timeline" value={form.timeline} onChange={(v) => set('timeline', v)} options={TIMELINE_OPTIONS} />
           </section>
 
           {/* ── Progress tracker ── */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-white/70">Progreso</span>
-              <span className="text-sm font-bold text-[#FF10F0]">{progress}% Completado</span>
+              <span className="text-sm font-medium text-white/70">Progress</span>
+              <span className="text-sm font-bold text-[#FF10F0]">{progress}% Completed</span>
             </div>
             <div className="h-2 rounded-full bg-white/10 overflow-hidden">
               <div
@@ -344,7 +345,7 @@ export default function MapCalculator({ role, onBack }) {
                 ? 'bg-[#FF10F0] text-white hover:brightness-110 cursor-pointer'
                 : 'bg-white/10 text-white/30 cursor-not-allowed'}`}
           >
-            Obtener mi presupuesto
+            Receive a Personal Budget
           </button>
 
           <div className="h-8" />
@@ -382,7 +383,7 @@ function SelectField({ label, value, onChange, options }) {
         className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-sm
           focus:outline-none focus:border-[#FF10F0]/50 focus:ring-1 focus:ring-[#FF10F0]/30 transition-colors appearance-none"
       >
-        <option value="" className="bg-[#111]">Seleccionar...</option>
+        <option value="" className="bg-[#111]">Select...</option>
         {options.map((o) => (
           <option key={o} value={o} className="bg-[#111]">{o}</option>
         ))}
