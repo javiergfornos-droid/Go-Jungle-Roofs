@@ -14,15 +14,24 @@ const PHASES = [
 const TOTAL_WEEKS = 12;
 
 export default function ResultsDashboard({ area, onBack }) {
-  const budget = (area * 180).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const budgetRaw = area * 180;
+  const budget = budgetRaw.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const publicAid = (budgetRaw * 0.25).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   const energySavings = (area * 4.5).toFixed(0);
   const waterRetention = (area * 400).toLocaleString('es-ES');
   const co2Capture = (area * 2.0).toFixed(0);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[#0a0a0a] text-white overflow-hidden">
+    <div className="fixed inset-0 z-50 flex flex-col text-white overflow-hidden">
+      {/* ── Background image (same as Hero) ── */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('/images/hero-bg.jpeg')" }}
+      />
+      <div className="absolute inset-0 bg-black/60" />
+
       {/* ── Top bar ── */}
-      <div className="flex items-center gap-3 px-6 py-4 border-b border-white/10">
+      <div className="relative z-10 flex items-center gap-3 px-6 py-4 border-b border-white/10">
         <button
           onClick={onBack}
           className="flex items-center gap-2 px-4 py-2 rounded-xl backdrop-blur-md bg-white/10
@@ -36,25 +45,35 @@ export default function ResultsDashboard({ area, onBack }) {
       </div>
 
       {/* ── Three-column dashboard ── */}
-      <div className="flex-1 flex flex-col lg:flex-row gap-5 p-5 overflow-auto min-h-0">
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row gap-5 p-5 overflow-auto min-h-0">
 
         {/* ── LEFT: Financial Estimate ── */}
         <div className="lg:w-[22%] flex flex-col items-center justify-center rounded-2xl
-          border border-white/10 bg-white/[0.03] p-8 text-center shrink-0">
-          <p className="text-sm font-semibold uppercase tracking-wider text-white/50 mb-2">
+          border border-fern/20 bg-black/40 backdrop-blur-md p-8 text-center shrink-0">
+          <p className="text-sm font-semibold uppercase tracking-wider text-fern-light mb-2">
             Total Estimated Budget
           </p>
-          <p className="text-5xl font-extrabold text-[#7FA068] leading-tight">
+          <p className="text-5xl font-extrabold text-fern leading-tight">
             {budget}€
           </p>
           <p className="text-sm text-white/40 mt-2">
             Based on {area.toFixed(1)} m² × 180 €/m²
           </p>
+
+          <div className="w-full border-t border-white/10 mt-5 pt-5">
+            <p className="text-xs font-semibold uppercase tracking-wider text-fern-light mb-1">
+              Public Aid Estimate
+            </p>
+            <p className="text-3xl font-extrabold text-fern leading-tight">
+              {publicAid}€
+            </p>
+            <p className="text-xs text-white/40 mt-1">25% subsidy</p>
+          </div>
         </div>
 
         {/* ── CENTER: Gantt Timeline ── */}
-        <div className="lg:flex-1 flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-6 min-w-0">
-          <p className="text-sm font-semibold uppercase tracking-wider text-white/50 mb-5">
+        <div className="lg:flex-1 flex flex-col rounded-2xl border border-fern/20 bg-black/40 backdrop-blur-md p-6 min-w-0">
+          <p className="text-sm font-semibold uppercase tracking-wider text-fern-light mb-5">
             Cronograma — 12 Weeks
           </p>
 
@@ -114,8 +133,8 @@ export default function ResultsDashboard({ area, onBack }) {
 
         {/* ── RIGHT: Environmental Impact ── */}
         <div className="lg:w-[22%] flex flex-col justify-center gap-6 rounded-2xl
-          border border-white/10 bg-white/[0.03] p-8 shrink-0">
-          <p className="text-sm font-semibold uppercase tracking-wider text-white/50 mb-1 text-center">
+          border border-fern/20 bg-black/40 backdrop-blur-md p-8 shrink-0">
+          <p className="text-sm font-semibold uppercase tracking-wider text-fern-light mb-1 text-center">
             Environmental Impact
           </p>
 
@@ -143,7 +162,7 @@ export default function ResultsDashboard({ area, onBack }) {
       </div>
 
       {/* ── Footer CTA ── */}
-      <div className="px-6 py-5 border-t border-white/10 flex justify-center">
+      <div className="relative z-10 px-6 py-5 border-t border-white/10 flex justify-center">
         <button
           onClick={() => window.open('https://calendly.com', '_blank')}
           className="px-10 py-4 rounded-xl bg-[#7FA068] text-white text-sm font-bold uppercase tracking-wider
@@ -159,9 +178,9 @@ export default function ResultsDashboard({ area, onBack }) {
 /* ── Metric card sub-component ── */
 function MetricCard({ icon, title, value, unit }) {
   return (
-    <div className="flex flex-col items-center text-center gap-2 p-4 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+    <div className="flex flex-col items-center text-center gap-2 p-4 rounded-xl bg-fern/5 border border-fern/15">
       {icon}
-      <p className="text-xs font-semibold uppercase tracking-wider text-white/50">{title}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-fern-light">{title}</p>
       <p className="text-2xl font-extrabold text-white leading-tight">
         {value} <span className="text-sm font-medium text-white/40">{unit}</span>
       </p>
