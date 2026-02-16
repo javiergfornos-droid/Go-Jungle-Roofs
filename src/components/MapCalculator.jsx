@@ -184,7 +184,16 @@ export default function MapCalculator({ role, onBack }) {
 
   /* ── Show results dashboard after submission ── */
   if (showResults) {
-    return <ResultsDashboard area={area} onBack={onBack} />;
+    return (
+      <ResultsDashboard
+        area={area}
+        form={form}
+        role={role}
+        assetCategory={assetCategory}
+        energyBill={energyBill}
+        onBack={onBack}
+      />
+    );
   }
 
   /* ================================================================== */

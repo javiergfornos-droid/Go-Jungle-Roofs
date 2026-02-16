@@ -1,4 +1,5 @@
-import { ArrowLeft, Leaf, Droplets, Wind } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, Leaf, Droplets, Wind, Loader2, CheckCircle } from 'lucide-react';
 
 /* ── Gantt phases (1-indexed weeks) ── */
 const PHASES = [
@@ -13,13 +14,50 @@ const PHASES = [
 
 const TOTAL_WEEKS = 12;
 
-export default function ResultsDashboard({ area, onBack }) {
+const ROLE_LABELS = { pioneer: 'Pioneer', sponsor: 'Sponsor', host: 'Host' };
+
+export default function ResultsDashboard({ area, form, role, assetCategory, energyBill, onBack }) {
+  const [sendStatus, setSendStatus] = useState('idle'); // idle | sending | success | error
+
   const budgetRaw = area * 180;
   const budget = budgetRaw.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  const publicAid = (budgetRaw * 0.25).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const publicAidRaw = budgetRaw * 0.25;
+  const publicAid = publicAidRaw.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   const energySavings = (area * 4.5).toFixed(0);
   const waterRetention = (area * 400).toLocaleString('es-ES');
   const co2Capture = (area * 2.0).toFixed(0);
+
+  const handleSchedule = async () => {
+    setSendStatus('sending');
+    try {
+      const res = await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          surname: form.surname,
+          email: form.email,
+          phone: form.phone,
+          address: form.address,
+          role: ROLE_LABELS[role] || role,
+          assetType: form.assetType,
+          assetCategory,
+          buildingRole: form.buildingRole,
+          timeLinked: form.timeLinked,
+          objective: form.objective,
+          timeline: form.timeline,
+          energyBill,
+          surfaceArea: area.toFixed(1),
+          totalBudget: budget,
+          publicAid,
+        }),
+      });
+      if (!res.ok) throw new Error('Send failed');
+      setSendStatus('success');
+    } catch {
+      setSendStatus('error');
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col text-white overflow-hidden">
@@ -162,14 +200,33 @@ export default function ResultsDashboard({ area, onBack }) {
       </div>
 
       {/* ── Footer CTA ── */}
-      <div className="relative z-10 px-6 py-5 border-t border-white/10 flex justify-center">
-        <button
-          onClick={() => window.open('https://calendly.com', '_blank')}
-          className="px-10 py-4 rounded-xl bg-[#7FA068] text-white text-sm font-bold uppercase tracking-wider
-            hover:brightness-110 transition-all cursor-pointer shadow-lg shadow-[#7FA068]/20"
-        >
-          I want to schedule a meeting with Jungle Roofs
-        </button>
+      <div className="relative z-10 px-6 py-5 border-t border-white/10 flex flex-col items-center gap-3">
+        {sendStatus === 'success' ? (
+          <div className="flex items-center gap-3 px-10 py-4 rounded-xl bg-fern/20 border border-fern/30 text-fern-light text-sm font-semibold">
+            <CheckCircle size={20} />
+            Your request has been sent! Our team will contact you shortly to schedule the meeting.
+          </div>
+        ) : (
+          <>
+            <button
+              onClick={handleSchedule}
+              disabled={sendStatus === 'sending'}
+              className={`flex items-center justify-center gap-2 px-10 py-4 rounded-xl text-white text-sm font-bold uppercase tracking-wider
+                transition-all shadow-lg shadow-[#7FA068]/20
+                ${sendStatus === 'sending'
+                  ? 'bg-[#7FA068]/60 cursor-wait'
+                  : 'bg-[#7FA068] hover:brightness-110 cursor-pointer'}`}
+            >
+              {sendStatus === 'sending' && <Loader2 size={18} className="animate-spin" />}
+              {sendStatus === 'sending' ? 'Sending...' : 'I want to schedule a meeting with Jungle Roofs'}
+            </button>
+            {sendStatus === 'error' && (
+              <p className="text-red-400 text-sm">
+                Something went wrong. Please try again or contact us directly.
+              </p>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
