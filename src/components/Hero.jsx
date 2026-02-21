@@ -2,19 +2,22 @@ const roles = [
   {
     emoji: '🏡',
     name: 'The Pioneer',
-    cta: 'I wish to BUILD A JUNGLE',
+    ctaLine1: 'I WISH TO BUILD A JUNGLE',
+    ctaLine2: 'GO TO THE SIMULATOR',
     role: 'pioneer',
   },
   {
     emoji: '🏢',
     name: 'The Sponsor',
-    cta: 'I wish to FINANCE A JUNGLE',
+    ctaLine1: 'I WISH TO FINANCE A JUNGLE',
+    ctaLine2: 'GO TO THE SIMULATOR',
     role: 'sponsor',
   },
   {
     emoji: '🏙️',
     name: 'The Host',
-    cta: 'I want to HOST A JUNGLE',
+    ctaLine1: 'I WISH TO DONATE A JUNGLE',
+    ctaLine2: 'GO TO THE SIMULATOR',
     role: 'host',
   },
 ];
@@ -64,9 +67,10 @@ export default function Hero({ onRoleSelect }) {
               {/* CTA Button */}
               <button
                 onClick={() => onRoleSelect(r.role)}
-                className="mt-1 px-6 py-3 rounded-full bg-fern text-white text-sm font-semibold hover:brightness-110 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                className="mt-1 px-6 py-3 rounded-full bg-fern text-white font-semibold hover:brightness-110 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex flex-col items-center leading-tight"
               >
-                {r.cta}
+                <span className="text-sm">{r.ctaLine1}</span>
+                <span className="text-xs font-medium text-white/70">{r.ctaLine2}</span>
               </button>
             </div>
           ))}

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Undo2, Pencil, Trash2, Info, ArrowLeft } from 'lucide-react';
+import { Undo2, Pencil, Trash2, Info, ArrowLeft, Search } from 'lucide-react';
 import ResultsDashboard from './ResultsDashboard';
 
 /* ── Geodesic area (m²) from an array of {lat,lng} ── */
@@ -31,7 +31,7 @@ const ROLE_LABELS = { pioneer: 'Pioneer', sponsor: 'Sponsor', host: 'Host' };
 /* ── Leaflet vertex icon ── */
 const VERTEX_ICON = L.divIcon({
   className: '',
-  html: '<div style="width:14px;height:14px;border-radius:50%;background:#00FFFF;border:2px solid #009999;box-shadow:0 0 8px #00FFFF"></div>',
+  html: '<div style="width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #7FA068;box-shadow:0 0 8px #7FA068"></div>',
   iconSize: [14, 14],
   iconAnchor: [7, 7],
 });
@@ -49,6 +49,14 @@ export default function MapCalculator({ role, onBack }) {
   const [showInfo, setShowInfo] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
+  /* ── Geocoding search ── */
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searching, setSearching] = useState(false);
+
+  /* ── Manual area ── */
+  const [manualMode, setManualMode] = useState(false);
+  const [manualArea, setManualArea] = useState('');
+
   /* ── Calculator state ── */
   const [assetCategory, setAssetCategory] = useState('');
   const [energyBill, setEnergyBill] = useState(150);
@@ -59,7 +67,10 @@ export default function MapCalculator({ role, onBack }) {
     surname: '',
     email: '',
     phone: '',
-    address: '',
+    street: '',
+    postalCode: '',
+    city: '',
+    country: '',
     assetType: '',
     buildingRole: '',
     timeLinked: '',
@@ -68,14 +79,39 @@ export default function MapCalculator({ role, onBack }) {
   });
 
   /* ── Derived values ── */
-  const area = useMemo(() => calcArea(vertices), [vertices]);
+  const area = useMemo(() => {
+    if (manualMode && manualArea) return parseFloat(manualArea);
+    return calcArea(vertices);
+  }, [vertices, manualMode, manualArea]);
 
   const FORM_KEYS = Object.keys(form);
   const filledCount = FORM_KEYS.filter((k) => form[k].trim() !== '').length;
-  const totalChecks = FORM_KEYS.length + 1 + 1; // +category +polygon
-  const doneChecks = filledCount + (assetCategory ? 1 : 0) + (vertices.length >= 3 ? 1 : 0);
+  const totalChecks = FORM_KEYS.length + 1 + 1; // +category +area
+  const polygonDone = manualMode ? !!manualArea : vertices.length >= 3;
+  const doneChecks = filledCount + (assetCategory ? 1 : 0) + (polygonDone ? 1 : 0);
   const progress = Math.round((doneChecks / totalChecks) * 100);
   const isComplete = progress === 100;
+
+  /* ────────────────────── GEOCODING ────────────────────── */
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    setSearching(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`,
+      );
+      const data = await res.json();
+      if (data.length > 0) {
+        const { lat, lon } = data[0];
+        mapRef.current?.setView([parseFloat(lat), parseFloat(lon)], 20);
+      }
+    } catch {
+      /* silently ignore */
+    } finally {
+      setSearching(false);
+    }
+  };
 
   /* ────────────────────── MAP INIT ────────────────────── */
   useEffect(() => {
@@ -135,14 +171,14 @@ export default function MapCalculator({ role, onBack }) {
 
     if (vertices.length >= 3) {
       L.polygon(vertices.map((v) => [v.lat, v.lng]), {
-        color: '#FF10F0',
-        fillColor: '#FF10F0',
-        fillOpacity: 0.2,
+        color: '#9AB888',
+        fillColor: '#7FA068',
+        fillOpacity: 0.25,
         weight: 2,
       }).addTo(group);
     } else if (vertices.length === 2) {
       L.polyline(vertices.map((v) => [v.lat, v.lng]), {
-        color: '#FF10F0',
+        color: '#9AB888',
         weight: 2,
       }).addTo(group);
     }
@@ -214,6 +250,29 @@ export default function MapCalculator({ role, onBack }) {
           Back
         </button>
 
+        {/* ── Address search bar ── */}
+        <form
+          onSubmit={handleSearch}
+          className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] flex w-[90%] max-w-md"
+        >
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search address..."
+            className="flex-1 px-4 py-2.5 rounded-l-xl bg-black/60 backdrop-blur-md border border-white/20
+              text-white text-sm placeholder-white/40 focus:outline-none focus:border-fern/50"
+          />
+          <button
+            type="submit"
+            disabled={searching}
+            className="px-4 py-2.5 rounded-r-xl bg-fern text-white border border-fern hover:brightness-110
+              transition-all cursor-pointer disabled:opacity-50"
+          >
+            <Search size={16} />
+          </button>
+        </form>
+
         {/* Floating toolbar */}
         <div className="absolute left-4 top-1/2 -translate-y-1/2 z-[1000] flex flex-col gap-3">
           {[
@@ -229,7 +288,7 @@ export default function MapCalculator({ role, onBack }) {
               title={label}
               className={`w-10 h-10 flex items-center justify-center rounded-xl cursor-pointer
                 backdrop-blur-md border transition-all
-                ${active ? 'bg-[#FF10F0]/30 text-[#FF10F0] border-[#FF10F0]/50' : 'bg-white/10 text-white border-white/20 hover:bg-white/20'}
+                ${active ? 'bg-fern/30 text-fern-light border-fern/50' : 'bg-white/10 text-white border-white/20 hover:bg-white/20'}
                 ${disabled ? 'opacity-30 !cursor-not-allowed' : ''}`}
             >
               <Icon size={18} />
@@ -247,8 +306,8 @@ export default function MapCalculator({ role, onBack }) {
         )}
 
         {/* Live area badge */}
-        {vertices.length >= 3 && (
-          <div className="absolute top-4 right-16 z-[1000] px-4 py-2 rounded-xl backdrop-blur-md bg-black/60 border border-white/20 text-white text-sm font-semibold">
+        {vertices.length >= 3 && !manualMode && (
+          <div className="absolute top-4 right-16 z-[1000] px-4 py-2 rounded-xl backdrop-blur-md bg-black/60 border border-fern/30 text-fern-light text-sm font-semibold">
             {area.toFixed(1)} m²
           </div>
         )}
@@ -265,10 +324,41 @@ export default function MapCalculator({ role, onBack }) {
           {/* Header */}
           <div>
             <h2 className="text-2xl font-bold">Available Surface</h2>
-            <p className="text-4xl font-extrabold text-[#FF10F0] mt-1">
+            <p className="text-4xl font-extrabold text-fern mt-1">
               {area.toFixed(1)} <span className="text-lg font-medium text-white/60">m²</span>
             </p>
           </div>
+
+          {/* ── Manual area toggle ── */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setManualMode((p) => !p)}
+              className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer
+                ${manualMode ? 'bg-fern' : 'bg-white/20'}`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform
+                  ${manualMode ? 'translate-x-5' : ''}`}
+              />
+            </button>
+            <span className="text-sm text-white/70">I prefer to enter surface area manually</span>
+          </div>
+
+          {manualMode && (
+            <div>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">Surface area (m²)</label>
+              <input
+                type="number"
+                min="1"
+                step="0.1"
+                value={manualArea}
+                onChange={(e) => setManualArea(e.target.value)}
+                placeholder="e.g. 120"
+                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-sm
+                  placeholder-white/30 focus:outline-none focus:border-fern/50 focus:ring-1 focus:ring-fern/30 transition-colors"
+              />
+            </div>
+          )}
 
           {/* ── Calculator ── */}
           <section className="space-y-6">
@@ -284,7 +374,7 @@ export default function MapCalculator({ role, onBack }) {
                     onClick={() => setAssetCategory(cat)}
                     className={`px-4 py-3 rounded-xl border text-sm font-semibold transition-all cursor-pointer
                       ${assetCategory === cat
-                        ? 'border-[#FF10F0] bg-[#FF10F0]/10 text-[#FF10F0]'
+                        ? 'border-fern bg-fern/10 text-fern-light'
                         : 'border-white/20 bg-white/5 text-white/70 hover:border-white/40'}`}
                   >
                     {cat}
@@ -327,7 +417,16 @@ export default function MapCalculator({ role, onBack }) {
               <InputField label="Phone" type="tel" value={form.phone} onChange={(v) => set('phone', v)} />
             </div>
 
-            <InputField label="Building Address" value={form.address} onChange={(v) => set('address', v)} />
+            {/* ── Address group ── */}
+            <div className="space-y-3 p-4 rounded-xl border border-white/10 bg-white/[0.02]">
+              <p className="text-xs font-semibold uppercase tracking-wider text-white/40">Building Address</p>
+              <InputField label="Street and Number" value={form.street} onChange={(v) => set('street', v)} />
+              <div className="grid grid-cols-2 gap-3">
+                <InputField label="Postal Code" value={form.postalCode} onChange={(v) => set('postalCode', v)} />
+                <InputField label="City" value={form.city} onChange={(v) => set('city', v)} />
+              </div>
+              <InputField label="Country" value={form.country} onChange={(v) => set('country', v)} />
+            </div>
 
             <SelectField label="Asset Type" value={form.assetType} onChange={(v) => set('assetType', v)} options={ASSET_TYPES} />
             <SelectField label="Role" value={form.buildingRole} onChange={(v) => set('buildingRole', v)} options={ROLE_OPTIONS} />
@@ -341,11 +440,11 @@ export default function MapCalculator({ role, onBack }) {
           <div>
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium text-white/70">Progress</span>
-              <span className="text-sm font-bold text-[#FF10F0]">{progress}% Completed</span>
+              <span className="text-sm font-bold text-fern">{progress}% Completed</span>
             </div>
             <div className="h-2 rounded-full bg-white/10 overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-[#FF10F0] to-[#FF10F0]/60 transition-all duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-fern to-fern-light transition-all duration-500"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -357,10 +456,10 @@ export default function MapCalculator({ role, onBack }) {
             disabled={!isComplete}
             className={`w-full py-4 rounded-xl text-sm font-bold uppercase tracking-wider transition-all
               ${isComplete
-                ? 'bg-[#FF10F0] text-white hover:brightness-110 cursor-pointer'
+                ? 'bg-fern text-white hover:brightness-110 cursor-pointer'
                 : 'bg-white/10 text-white/30 cursor-not-allowed'}`}
           >
-            Receive a Personal Budget
+            View Project Dashboard
           </button>
 
           <div className="h-8" />
@@ -382,7 +481,7 @@ function InputField({ label, value, onChange, type = 'text' }) {
         onChange={(e) => onChange(e.target.value)}
         placeholder={label}
         className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-sm
-          placeholder-white/30 focus:outline-none focus:border-[#FF10F0]/50 focus:ring-1 focus:ring-[#FF10F0]/30 transition-colors"
+          placeholder-white/30 focus:outline-none focus:border-fern/50 focus:ring-1 focus:ring-fern/30 transition-colors"
       />
     </div>
   );
@@ -396,7 +495,7 @@ function SelectField({ label, value, onChange, options }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-sm
-          focus:outline-none focus:border-[#FF10F0]/50 focus:ring-1 focus:ring-[#FF10F0]/30 transition-colors appearance-none"
+          focus:outline-none focus:border-fern/50 focus:ring-1 focus:ring-fern/30 transition-colors appearance-none"
       >
         <option value="" className="bg-[#111]">Select...</option>
         {options.map((o) => (
@@ -418,7 +517,7 @@ function RadioGroup({ label, value, onChange, options }) {
             onClick={() => onChange(o)}
             className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer
               ${value === o
-                ? 'border-[#FF10F0] bg-[#FF10F0]/10 text-[#FF10F0]'
+                ? 'border-fern bg-fern/10 text-fern-light'
                 : 'border-white/20 bg-white/5 text-white/60 hover:border-white/40'}`}
           >
             {o}

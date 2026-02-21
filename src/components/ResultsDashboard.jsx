@@ -28,6 +28,9 @@ export default function ResultsDashboard({ area, form, role, assetCategory, ener
   const waterRetention = (area * 400).toLocaleString('es-ES');
   const co2Capture = (area * 2.0).toFixed(0);
 
+  /* Combine address fields for API */
+  const fullAddress = [form.street, form.postalCode, form.city, form.country].filter(Boolean).join(', ');
+
   const handleSchedule = async () => {
     setSendStatus('sending');
     try {
@@ -39,7 +42,7 @@ export default function ResultsDashboard({ area, form, role, assetCategory, ener
           surname: form.surname,
           email: form.email,
           phone: form.phone,
-          address: form.address,
+          address: fullAddress,
           role: ROLE_LABELS[role] || role,
           assetType: form.assetType,
           assetCategory,
@@ -81,7 +84,7 @@ export default function ResultsDashboard({ area, form, role, assetCategory, ener
           <ArrowLeft size={16} />
           Back
         </button>
-        <h1 className="text-lg font-bold tracking-wide">Your Personal Budget</h1>
+        <h1 className="text-lg font-bold tracking-wide">Your Project Dashboard</h1>
         <span className="ml-auto text-sm text-white/50">{area.toFixed(1)} m² rooftop</span>
       </div>
 
@@ -112,63 +115,83 @@ export default function ResultsDashboard({ area, form, role, assetCategory, ener
           </div>
         </div>
 
-        {/* ── CENTER: Gantt Timeline ── */}
-        <div className="lg:flex-1 flex flex-col rounded-2xl border border-fern/20 bg-black/40 backdrop-blur-md p-6 min-w-0">
-          <p className="text-sm font-semibold uppercase tracking-wider text-fern-light mb-5">
-            Cronograma — 12 Weeks
-          </p>
+        {/* ── CENTER: Gantt Timeline + Disclaimer ── */}
+        <div className="lg:flex-1 flex flex-col gap-5 min-w-0">
+          {/* Gantt chart */}
+          <div className="flex flex-col rounded-2xl border border-fern/20 bg-black/40 backdrop-blur-md p-6">
+            <p className="text-sm font-semibold uppercase tracking-wider text-fern-light mb-5">
+              Cronograma — 12 Weeks
+            </p>
 
-          {/* Week labels */}
-          <div className="flex mb-2 pl-[200px]">
-            {Array.from({ length: TOTAL_WEEKS }, (_, i) => (
-              <div key={i} className="flex-1 text-center text-[10px] text-white/40 font-medium">
-                {i + 1}
-              </div>
-            ))}
-          </div>
-
-          {/* Gantt rows */}
-          <div className="flex flex-col gap-2">
-            {PHASES.map((phase) => {
-              const leftPct = ((phase.start - 1) / TOTAL_WEEKS) * 100;
-              const widthPct = ((phase.end - phase.start + 1) / TOTAL_WEEKS) * 100;
-              return (
-                <div key={phase.label} className="flex items-center gap-3 h-9">
-                  {/* Phase label */}
-                  <div className="w-[200px] shrink-0 text-xs text-white/70 text-right pr-2 truncate" title={phase.label}>
-                    {phase.label}
-                  </div>
-                  {/* Bar track */}
-                  <div className="flex-1 relative h-full rounded-lg bg-white/[0.04]">
-                    {/* Grid lines */}
-                    {Array.from({ length: TOTAL_WEEKS }, (_, i) => (
-                      <div
-                        key={i}
-                        className="absolute top-0 bottom-0 border-l border-white/[0.06]"
-                        style={{ left: `${((i) / TOTAL_WEEKS) * 100}%` }}
-                      />
-                    ))}
-                    {/* Bar */}
-                    <div
-                      className="absolute top-1 bottom-1 rounded-md transition-all"
-                      style={{
-                        left: `${leftPct}%`,
-                        width: `${widthPct}%`,
-                        backgroundColor: phase.color,
-                        boxShadow: `0 0 12px ${phase.color}44`,
-                      }}
-                    />
-                  </div>
+            {/* Week labels */}
+            <div className="flex mb-2 pl-[200px]">
+              {Array.from({ length: TOTAL_WEEKS }, (_, i) => (
+                <div key={i} className="flex-1 text-center text-[10px] text-white/40 font-medium">
+                  {i + 1}
                 </div>
-              );
-            })}
+              ))}
+            </div>
+
+            {/* Gantt rows */}
+            <div className="flex flex-col gap-2">
+              {PHASES.map((phase) => {
+                const leftPct = ((phase.start - 1) / TOTAL_WEEKS) * 100;
+                const widthPct = ((phase.end - phase.start + 1) / TOTAL_WEEKS) * 100;
+                return (
+                  <div key={phase.label} className="flex items-center gap-3 h-9">
+                    {/* Phase label */}
+                    <div className="w-[200px] shrink-0 text-xs text-white/70 text-right pr-2 truncate" title={phase.label}>
+                      {phase.label}
+                    </div>
+                    {/* Bar track */}
+                    <div className="flex-1 relative h-full rounded-lg bg-white/[0.04]">
+                      {/* Grid lines */}
+                      {Array.from({ length: TOTAL_WEEKS }, (_, i) => (
+                        <div
+                          key={i}
+                          className="absolute top-0 bottom-0 border-l border-white/[0.06]"
+                          style={{ left: `${((i) / TOTAL_WEEKS) * 100}%` }}
+                        />
+                      ))}
+                      {/* Bar */}
+                      <div
+                        className="absolute top-1 bottom-1 rounded-md transition-all"
+                        style={{
+                          left: `${leftPct}%`,
+                          width: `${widthPct}%`,
+                          backgroundColor: phase.color,
+                          boxShadow: `0 0 12px ${phase.color}44`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Week axis */}
+            <div className="flex mt-3 pl-[200px]">
+              {Array.from({ length: TOTAL_WEEKS }, (_, i) => (
+                <div key={i} className="flex-1 border-t border-white/[0.08]" />
+              ))}
+            </div>
           </div>
 
-          {/* Week axis */}
-          <div className="flex mt-3 pl-[200px]">
-            {Array.from({ length: TOTAL_WEEKS }, (_, i) => (
-              <div key={i} className="flex-1 border-t border-white/[0.08]" />
-            ))}
+          {/* ── Legal disclaimer ── */}
+          <div className="rounded-2xl border border-white/10 bg-black/30 backdrop-blur-md p-5">
+            <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-2">
+              Disclaimer
+            </p>
+            <p className="text-[11px] leading-relaxed text-white/50">
+              The figures shown (including cost, timeline, and projected returns/savings) are preliminary estimates
+              for information purposes only and are non-binding. They are based on the inputs provided and standard
+              assumptions, and do not constitute an offer, quotation, contract, or guarantee of price, schedule,
+              performance, or outcomes. Actual scope, timing, and costs may change materially following a technical
+              site visit, measurements, condition assessment (e.g., structure/waterproofing/drainage), regulatory
+              requirements, access constraints, and supplier availability/market pricing. Any returns/savings are
+              projections subject to assumptions and uncertainty. The next step is to schedule a site visit to
+              validate the project and confirm a final, binding proposal.
+            </p>
           </div>
         </div>
 
@@ -177,6 +200,10 @@ export default function ResultsDashboard({ area, form, role, assetCategory, ener
           border border-fern/20 bg-black/40 backdrop-blur-md p-8 shrink-0">
           <p className="text-sm font-semibold uppercase tracking-wider text-fern-light mb-1 text-center">
             Environmental Impact
+          </p>
+
+          <p className="text-center text-sm text-white/70 leading-snug -mt-3 mb-2">
+            This is how your green roof will transform and improve your life
           </p>
 
           <MetricCard
