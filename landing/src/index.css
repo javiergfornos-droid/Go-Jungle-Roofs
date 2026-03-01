@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fern: #7FA068;
+  --color-fern-dark: #6B8A56;
+  --color-fern-light: #9AB888;
+  --color-beige: #f9f9f9;
+  --color-body: #4a4a4a;
+  --font-sans: "Montserrat", sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-body);
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
