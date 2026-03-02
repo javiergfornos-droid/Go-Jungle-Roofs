@@ -22,11 +22,8 @@ function calcArea(pts) {
 /* ── Form option lists ── */
 const ASSET_TYPES = ['Residential', 'Office', 'Hotel', 'Industrial', 'Commercial'];
 const ROLE_OPTIONS = ['Owner', 'President', 'Tenant', 'Administrator'];
-const TIME_OPTIONS = ['< 6 months', '6 months - 2 years', '+ 2 years'];
 const OBJECTIVE_OPTIONS = ['Fix a problem', 'Usable space', 'Green project'];
 const TIMELINE_OPTIONS = ['Urgent', '6 months', 'No date'];
-
-const ROLE_LABELS = { pioneer: 'Pioneer', sponsor: 'Sponsor', host: 'Host' };
 
 /* ── Leaflet vertex icon ── */
 const VERTEX_ICON = L.divIcon({
@@ -36,8 +33,11 @@ const VERTEX_ICON = L.divIcon({
   iconAnchor: [7, 7],
 });
 
+/* ── Email validation ── */
+const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
 /* ================================================================== */
-export default function MapCalculator({ role, onBack }) {
+export default function MapCalculator({ onBack }) {
   /* ── Refs ── */
   const containerRef = useRef(null);
   const mapRef = useRef(null);
@@ -59,7 +59,6 @@ export default function MapCalculator({ role, onBack }) {
 
   /* ── Calculator state ── */
   const [assetCategory, setAssetCategory] = useState('');
-  const [energyBill, setEnergyBill] = useState(150);
 
   /* ── Form state ── */
   const [form, setForm] = useState({
@@ -73,7 +72,6 @@ export default function MapCalculator({ role, onBack }) {
     country: '',
     assetType: '',
     buildingRole: '',
-    timeLinked: '',
     objective: '',
     timeline: '',
   });
@@ -84,13 +82,12 @@ export default function MapCalculator({ role, onBack }) {
     return calcArea(vertices);
   }, [vertices, manualMode, manualArea]);
 
-  const FORM_KEYS = Object.keys(form);
-  const filledCount = FORM_KEYS.filter((k) => form[k].trim() !== '').length;
-  const totalChecks = FORM_KEYS.length + 1 + 1; // +category +area
-  const polygonDone = manualMode ? !!manualArea : vertices.length >= 3;
-  const doneChecks = filledCount + (assetCategory ? 1 : 0) + (polygonDone ? 1 : 0);
-  const progress = Math.round((doneChecks / totalChecks) * 100);
-  const isComplete = progress === 100;
+  /* ── Required‐field validation ── */
+  const nameValid = form.name.trim().length > 0;
+  const emailValid = isValidEmail(form.email);
+  const addressValid = form.street.trim().length > 0;
+  const areaValid = area > 0;
+  const isComplete = nameValid && emailValid && addressValid && areaValid;
 
   /* ────────────────────── GEOCODING ────────────────────── */
   const handleSearch = async (e) => {
@@ -134,7 +131,6 @@ export default function MapCalculator({ role, onBack }) {
     mapRef.current = map;
     layerGroupRef.current = L.layerGroup().addTo(map);
 
-    /* Try to centre on user location */
     navigator.geolocation?.getCurrentPosition(
       (pos) => {
         if (mapRef.current) {
@@ -214,7 +210,6 @@ export default function MapCalculator({ role, onBack }) {
 
   const handleSubmit = () => {
     if (!isComplete) return;
-    console.log('Submit', { ...form, assetCategory, energyBill, area, role, vertices });
     setShowResults(true);
   };
 
@@ -224,9 +219,7 @@ export default function MapCalculator({ role, onBack }) {
       <ResultsDashboard
         area={area}
         form={form}
-        role={role}
         assetCategory={assetCategory}
-        energyBill={energyBill}
         onBack={onBack}
       />
     );
@@ -316,11 +309,6 @@ export default function MapCalculator({ role, onBack }) {
       {/* ───────── RIGHT: FORM & CALCULATOR ───────── */}
       <div className="w-full lg:w-1/2 h-[50vh] lg:h-full overflow-y-auto bg-[#111111] text-white">
         <div className="p-6 lg:p-10 max-w-lg mx-auto space-y-8">
-          {/* Role badge */}
-          <span className="inline-block px-3 py-1 rounded-full bg-fern/20 text-fern-light text-xs font-semibold uppercase tracking-wider">
-            {ROLE_LABELS[role] || role}
-          </span>
-
           {/* Header */}
           <div>
             <h2 className="text-2xl font-bold">Available Surface</h2>
@@ -346,7 +334,9 @@ export default function MapCalculator({ role, onBack }) {
 
           {manualMode && (
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-1.5">Surface area (m²)</label>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">
+                Surface area (m²) <span className="text-red-400">*</span>
+              </label>
               <input
                 type="number"
                 min="1"
@@ -382,25 +372,6 @@ export default function MapCalculator({ role, onBack }) {
                 ))}
               </div>
             </div>
-
-            {/* Energy bill slider */}
-            <div>
-              <label className="block text-sm font-medium text-white/70 mb-3">
-                Monthly energy bill: <span className="text-white font-bold">{energyBill}€</span>
-              </label>
-              <input
-                type="range"
-                min={0}
-                max={300}
-                value={energyBill}
-                onChange={(e) => setEnergyBill(Number(e.target.value))}
-                className="jr-slider w-full"
-              />
-              <div className="flex justify-between text-xs text-white/40 mt-1">
-                <span>0€</span>
-                <span>300€</span>
-              </div>
-            </div>
           </section>
 
           {/* ── Questionnaire ── */}
@@ -408,19 +379,28 @@ export default function MapCalculator({ role, onBack }) {
             <h3 className="text-sm font-semibold uppercase tracking-wider text-white/50">Project Details</h3>
 
             <div className="grid grid-cols-2 gap-3">
-              <InputField label="Name" value={form.name} onChange={(v) => set('name', v)} />
+              <InputField label="Name" value={form.name} onChange={(v) => set('name', v)} required />
               <InputField label="Surname" value={form.surname} onChange={(v) => set('surname', v)} />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <InputField label="Email" type="email" value={form.email} onChange={(v) => set('email', v)} />
+              <InputField
+                label="Email"
+                type="email"
+                value={form.email}
+                onChange={(v) => set('email', v)}
+                required
+                error={form.email.length > 0 && !emailValid ? 'Enter a valid email' : ''}
+              />
               <InputField label="Phone" type="tel" value={form.phone} onChange={(v) => set('phone', v)} />
             </div>
 
             {/* ── Address group ── */}
             <div className="space-y-3 p-4 rounded-xl border border-white/10 bg-white/[0.02]">
-              <p className="text-xs font-semibold uppercase tracking-wider text-white/40">Building Address</p>
-              <InputField label="Street and Number" value={form.street} onChange={(v) => set('street', v)} />
+              <p className="text-xs font-semibold uppercase tracking-wider text-white/40">
+                Building Address <span className="text-red-400">*</span>
+              </p>
+              <InputField label="Street and Number" value={form.street} onChange={(v) => set('street', v)} required />
               <div className="grid grid-cols-2 gap-3">
                 <InputField label="Postal Code" value={form.postalCode} onChange={(v) => set('postalCode', v)} />
                 <InputField label="City" value={form.city} onChange={(v) => set('city', v)} />
@@ -431,24 +411,16 @@ export default function MapCalculator({ role, onBack }) {
             <SelectField label="Asset Type" value={form.assetType} onChange={(v) => set('assetType', v)} options={ASSET_TYPES} />
             <SelectField label="Role" value={form.buildingRole} onChange={(v) => set('buildingRole', v)} options={ROLE_OPTIONS} />
 
-            <RadioGroup label="Time linked to building" value={form.timeLinked} onChange={(v) => set('timeLinked', v)} options={TIME_OPTIONS} />
             <RadioGroup label="Primary Objective" value={form.objective} onChange={(v) => set('objective', v)} options={OBJECTIVE_OPTIONS} />
             <RadioGroup label="Timeline" value={form.timeline} onChange={(v) => set('timeline', v)} options={TIMELINE_OPTIONS} />
           </section>
 
-          {/* ── Progress tracker ── */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-white/70">Progress</span>
-              <span className="text-sm font-bold text-fern">{progress}% Completed</span>
-            </div>
-            <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-fern to-fern-light transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
+          {/* ── Required fields hint ── */}
+          {!isComplete && (
+            <p className="text-xs text-white/40">
+              Fill required fields (Name, Email, Address, Surface Area) to continue.
+            </p>
+          )}
 
           {/* ── Submit ── */}
           <button
@@ -471,10 +443,12 @@ export default function MapCalculator({ role, onBack }) {
 
 /* ── tiny sub-components ── */
 
-function InputField({ label, value, onChange, type = 'text' }) {
+function InputField({ label, value, onChange, type = 'text', required, error }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-white/70 mb-1.5">{label}</label>
+      <label className="block text-sm font-medium text-white/70 mb-1.5">
+        {label} {required && <span className="text-red-400">*</span>}
+      </label>
       <input
         type={type}
         value={value}
@@ -483,6 +457,7 @@ function InputField({ label, value, onChange, type = 'text' }) {
         className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-sm
           placeholder-white/30 focus:outline-none focus:border-fern/50 focus:ring-1 focus:ring-fern/30 transition-colors"
       />
+      {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
     </div>
   );
 }
