@@ -1,28 +1,4 @@
-const roles = [
-  {
-    emoji: '🏡',
-    name: 'The Pioneer',
-    ctaLine1: 'I WISH TO BUILD A JUNGLE',
-    ctaLine2: 'GO TO THE SIMULATOR',
-    role: 'pioneer',
-  },
-  {
-    emoji: '🏢',
-    name: 'The Sponsor',
-    ctaLine1: 'I WISH TO FINANCE A JUNGLE',
-    ctaLine2: 'GO TO THE SIMULATOR',
-    role: 'sponsor',
-  },
-  {
-    emoji: '🏙️',
-    name: 'The Host',
-    ctaLine1: 'I WISH TO DONATE A JUNGLE',
-    ctaLine2: 'GO TO THE SIMULATOR',
-    role: 'host',
-  },
-];
-
-export default function Hero({ onRoleSelect }) {
+export default function Hero({ onStart }) {
   return (
     <section id="hero" className="relative w-full min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background image with overlay */}
@@ -47,33 +23,16 @@ export default function Hero({ onRoleSelect }) {
           Transforming grey cities into living, breathing ecosystems — one rooftop at a time.
         </p>
 
-        {/* Role Selector Grid */}
-        <div className="mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
-          {roles.map((r) => (
-            <div
-              key={r.role}
-              className="flex flex-col items-center gap-3"
-            >
-              {/* Large Emoji */}
-              <span className="text-6xl leading-none" role="img">
-                {r.emoji}
-              </span>
-
-              {/* Role Name */}
-              <h3 className="text-lg font-semibold text-white uppercase tracking-wider">
-                {r.name}
-              </h3>
-
-              {/* CTA Button */}
-              <button
-                onClick={() => onRoleSelect(r.role)}
-                className="mt-1 px-6 py-3 rounded-full bg-fern text-white font-semibold hover:brightness-110 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex flex-col items-center leading-tight"
-              >
-                <span className="text-sm">{r.ctaLine1}</span>
-                <span className="text-xs font-medium text-white/70">{r.ctaLine2}</span>
-              </button>
-            </div>
-          ))}
+        {/* Single CTA */}
+        <div className="mt-12 md:mt-16 flex justify-center">
+          <button
+            onClick={onStart}
+            className="px-10 py-4 rounded-full bg-fern text-white text-lg font-bold uppercase tracking-wider
+              hover:brightness-110 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer
+              shadow-lg shadow-fern/30"
+          >
+            Go to the simulator
+          </button>
         </div>
       </div>
 

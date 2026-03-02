@@ -7,26 +7,15 @@ import MapCalculator from './components/MapCalculator';
 
 export default function App() {
   const [view, setView] = useState('landing');
-  const [selectedRole, setSelectedRole] = useState(null);
-
-  const handleRoleSelect = (role) => {
-    setSelectedRole(role);
-    setView('map');
-  };
-
-  const handleBack = () => {
-    setView('landing');
-    setSelectedRole(null);
-  };
 
   if (view === 'map') {
-    return <MapCalculator role={selectedRole} onBack={handleBack} />;
+    return <MapCalculator onBack={() => setView('landing')} />;
   }
 
   return (
     <div className="min-h-screen">
       <Navbar />
-      <Hero onRoleSelect={handleRoleSelect} />
+      <Hero onStart={() => setView('map')} />
       <Transformations />
       <Footer />
     </div>
