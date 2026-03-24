@@ -227,7 +227,7 @@ export default function MapCalculator({ onBack }) {
 
   /* ================================================================== */
   return (
-    <div className="fixed inset-0 z-50 flex flex-col lg:flex-row bg-[#0a0a0a] overflow-y-auto lg:overflow-hidden">
+    <div className="fixed inset-0 z-50 flex flex-col lg:flex-row bg-white overflow-y-auto lg:overflow-hidden">
       {/* ───────── LEFT: MAP ───────── */}
       <div className="relative w-full lg:w-1/2 h-72 sm:h-80 lg:h-full shrink-0">
         <div ref={containerRef} className="absolute inset-0" />
@@ -236,8 +236,8 @@ export default function MapCalculator({ onBack }) {
         <button
           onClick={onBack}
           className="absolute top-4 left-4 z-[1000] flex items-center gap-2 px-4 py-2 rounded-xl
-            backdrop-blur-md bg-white/10 border border-white/20 text-white text-sm font-medium
-            hover:bg-white/20 transition-colors cursor-pointer"
+            bg-white border border-gray-200 text-gray-600 text-sm font-medium
+            hover:bg-gray-50 transition-colors cursor-pointer shadow-sm"
         >
           <ArrowLeft size={16} />
           Back
@@ -253,8 +253,8 @@ export default function MapCalculator({ onBack }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search address..."
-            className="flex-1 px-4 py-2.5 rounded-l-xl bg-black/60 backdrop-blur-md border border-white/20
-              text-white text-sm placeholder-white/40 focus:outline-none focus:border-fern/50"
+            className="flex-1 px-4 py-2.5 rounded-l-xl bg-white border border-gray-200
+              text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-fern/50 shadow-sm"
           />
           <button
             type="submit"
@@ -282,8 +282,8 @@ export default function MapCalculator({ onBack }) {
               disabled={disabled}
               title={label}
               className={`w-10 h-10 flex items-center justify-center rounded-xl cursor-pointer
-                backdrop-blur-md border transition-all
-                ${active ? 'bg-fern/30 text-fern-light border-fern/50' : 'bg-white/10 text-white border-white/20 hover:bg-white/20'}
+                border transition-all shadow-sm
+                ${active ? 'bg-fern/10 text-fern border-fern/50' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}
                 ${disabled ? 'opacity-30 !cursor-not-allowed' : ''}`}
             >
               <Icon size={18} />
@@ -293,29 +293,29 @@ export default function MapCalculator({ onBack }) {
 
         {/* Info overlay */}
         {showInfo && (
-          <div className="absolute bottom-4 left-4 right-4 z-[1000] p-4 rounded-xl backdrop-blur-md bg-black/60 border border-white/20 text-white text-sm">
+          <div className="absolute bottom-4 left-4 right-4 z-[1000] p-4 rounded-xl bg-white border border-gray-200 text-gray-700 text-sm shadow-sm">
             <p><strong>Vertices:</strong> {vertices.length}</p>
             <p><strong>Surface area:</strong> {area.toFixed(1)} m²</p>
-            <p className="text-white/60 mt-1 text-xs">Click on the map to draw your rooftop</p>
+            <p className="text-gray-400 mt-1 text-xs">Click on the map to draw your rooftop</p>
           </div>
         )}
 
         {/* Live area badge */}
         {vertices.length >= 3 && !manualMode && (
-          <div className="absolute top-4 right-16 z-[1000] px-4 py-2 rounded-xl backdrop-blur-md bg-black/60 border border-fern/30 text-fern-light text-sm font-semibold">
+          <div className="absolute top-4 right-16 z-[1000] px-4 py-2 rounded-xl bg-white border border-fern/30 text-fern text-sm font-semibold shadow-sm">
             {area.toFixed(1)} m²
           </div>
         )}
       </div>
 
       {/* ───────── RIGHT: FORM & CALCULATOR ───────── */}
-      <div className="w-full lg:w-1/2 lg:h-full lg:overflow-y-auto bg-[#111111] text-white">
+      <div className="w-full lg:w-1/2 lg:h-full lg:overflow-y-auto bg-white text-gray-900">
         <div className="p-6 lg:p-10 max-w-lg mx-auto space-y-8">
           {/* Header */}
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold">Available Surface</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Available Surface</h2>
             <p className="text-3xl sm:text-4xl font-extrabold text-fern mt-1">
-              {area.toFixed(1)} <span className="text-base sm:text-lg font-medium text-white/60">m²</span>
+              {area.toFixed(1)} <span className="text-base sm:text-lg font-medium text-gray-400">m²</span>
             </p>
           </div>
 
@@ -324,19 +324,19 @@ export default function MapCalculator({ onBack }) {
             <button
               onClick={() => setManualMode((p) => !p)}
               className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer
-                ${manualMode ? 'bg-fern' : 'bg-white/20'}`}
+                ${manualMode ? 'bg-fern' : 'bg-gray-300'}`}
             >
               <span
                 className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform
                   ${manualMode ? 'translate-x-5' : ''}`}
               />
             </button>
-            <span className="text-sm text-white/70">I prefer to enter surface area manually</span>
+            <span className="text-sm text-gray-500">I prefer to enter surface area manually</span>
           </div>
 
           {manualMode && (
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-1.5">
+              <label className="block text-sm font-medium text-gray-500 mb-1.5">
                 Surface area (m²) <span className="text-red-400">*</span>
               </label>
               <input
@@ -346,19 +346,19 @@ export default function MapCalculator({ onBack }) {
                 value={manualArea}
                 onChange={(e) => setManualArea(e.target.value)}
                 placeholder="e.g. 120"
-                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-sm
-                  placeholder-white/30 focus:outline-none focus:border-fern/50 focus:ring-1 focus:ring-fern/30 transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 text-sm
+                  placeholder-gray-400 focus:outline-none focus:border-fern/50 focus:ring-1 focus:ring-fern/30 transition-colors"
               />
             </div>
           )}
 
           {/* ── Calculator ── */}
           <section className="space-y-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/50">Calculator</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Calculator</h3>
 
             {/* Asset category cards */}
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-3">Property type</label>
+              <label className="block text-sm font-medium text-gray-500 mb-3">Property type</label>
               <div className="grid grid-cols-2 gap-3">
                 {['Unifamiliar', 'Comunidad'].map((cat) => (
                   <button
@@ -366,8 +366,8 @@ export default function MapCalculator({ onBack }) {
                     onClick={() => setAssetCategory(cat)}
                     className={`px-4 py-3 rounded-xl border text-sm font-semibold transition-all cursor-pointer
                       ${assetCategory === cat
-                        ? 'border-fern bg-fern/10 text-fern-light'
-                        : 'border-white/20 bg-white/5 text-white/70 hover:border-white/40'}`}
+                        ? 'border-fern bg-fern/10 text-fern'
+                        : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300'}`}
                   >
                     {cat}
                   </button>
@@ -378,7 +378,7 @@ export default function MapCalculator({ onBack }) {
 
           {/* ── Questionnaire ── */}
           <section className="space-y-5">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/50">Project Details</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Project Details</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <InputField label="Name" value={form.name} onChange={(v) => set('name', v)} required />
@@ -398,8 +398,8 @@ export default function MapCalculator({ onBack }) {
             </div>
 
             {/* ── Address group ── */}
-            <div className="space-y-3 p-4 rounded-xl border border-white/10 bg-white/[0.02]">
-              <p className="text-xs font-semibold uppercase tracking-wider text-white/40">
+            <div className="space-y-3 p-4 rounded-xl border border-gray-200 bg-gray-50/50">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
                 Building Address <span className="text-red-400">*</span>
               </p>
               <InputField label="Street and Number" value={form.street} onChange={(v) => set('street', v)} required />
@@ -419,7 +419,7 @@ export default function MapCalculator({ onBack }) {
 
           {/* ── Required fields hint ── */}
           {!isComplete && (
-            <p className="text-xs text-white/40">
+            <p className="text-xs text-gray-400">
               Fill required fields (Name, Email, Address, Surface Area) to continue.
             </p>
           )}
@@ -431,7 +431,7 @@ export default function MapCalculator({ onBack }) {
             className={`w-full py-4 rounded-xl text-sm font-bold uppercase tracking-wider transition-all
               ${isComplete
                 ? 'bg-fern text-white hover:brightness-110 cursor-pointer'
-                : 'bg-white/10 text-white/30 cursor-not-allowed'}`}
+                : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
           >
             View Project Dashboard
           </button>
@@ -448,7 +448,7 @@ export default function MapCalculator({ onBack }) {
 function InputField({ label, value, onChange, type = 'text', required, error }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-white/70 mb-1.5">
+      <label className="block text-sm font-medium text-gray-500 mb-1.5">
         {label} {required && <span className="text-red-400">*</span>}
       </label>
       <input
@@ -456,8 +456,8 @@ function InputField({ label, value, onChange, type = 'text', required, error }) 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={label}
-        className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-sm
-          placeholder-white/30 focus:outline-none focus:border-fern/50 focus:ring-1 focus:ring-fern/30 transition-colors"
+        className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 text-sm
+          placeholder-gray-400 focus:outline-none focus:border-fern/50 focus:ring-1 focus:ring-fern/30 transition-colors"
       />
       {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
     </div>
@@ -467,16 +467,16 @@ function InputField({ label, value, onChange, type = 'text', required, error }) 
 function SelectField({ label, value, onChange, options }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-white/70 mb-1.5">{label}</label>
+      <label className="block text-sm font-medium text-gray-500 mb-1.5">{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-sm
+        className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 text-sm
           focus:outline-none focus:border-fern/50 focus:ring-1 focus:ring-fern/30 transition-colors appearance-none"
       >
-        <option value="" className="bg-[#111]">Select...</option>
+        <option value="" className="bg-white">Select...</option>
         {options.map((o) => (
-          <option key={o} value={o} className="bg-[#111]">{o}</option>
+          <option key={o} value={o} className="bg-white">{o}</option>
         ))}
       </select>
     </div>
@@ -486,7 +486,7 @@ function SelectField({ label, value, onChange, options }) {
 function RadioGroup({ label, value, onChange, options }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-white/70 mb-2">{label}</label>
+      <label className="block text-sm font-medium text-gray-500 mb-2">{label}</label>
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <button
@@ -494,8 +494,8 @@ function RadioGroup({ label, value, onChange, options }) {
             onClick={() => onChange(o)}
             className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer
               ${value === o
-                ? 'border-fern bg-fern/10 text-fern-light'
-                : 'border-white/20 bg-white/5 text-white/60 hover:border-white/40'}`}
+                ? 'border-fern bg-fern/10 text-fern'
+                : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300'}`}
           >
             {o}
           </button>
