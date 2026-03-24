@@ -56,7 +56,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 overflow-auto p-4 pt-16 sm:pt-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white overflow-auto p-4 pt-16 sm:pt-4">
       {/* ── Back button ── */}
       <button
         onClick={onBack}
