@@ -108,23 +108,26 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
               This is how your green roof will transform and improve your life
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <MetricCard
-                icon={<Wind size={24} className="text-fern" />}
+                icon={<Wind size={20} className="text-fern" />}
                 title="Energy Savings"
-                value={`${energySavings}€`}
+                value={energySavings}
+                suffix="€"
                 unit="/ year"
               />
               <MetricCard
-                icon={<Droplets size={24} className="text-fern" />}
+                icon={<Droplets size={20} className="text-fern" />}
                 title="Water Retention"
-                value={`${waterRetention}L`}
+                value={waterRetention}
+                suffix=" L"
                 unit="/ year"
               />
               <MetricCard
-                icon={<Leaf size={24} className="text-fern" />}
+                icon={<Leaf size={20} className="text-fern" />}
                 title="CO₂ Captured"
-                value={`${co2Capture}Kg`}
+                value={co2Capture}
+                suffix=" Kg"
                 unit="/ year"
               />
             </div>
@@ -183,15 +186,15 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
 }
 
 /* ── Metric card ── */
-function MetricCard({ icon, title, value, unit }) {
+function MetricCard({ icon, title, value, suffix, unit }) {
   return (
-    <div className="flex flex-col items-center text-center gap-1.5 p-3 sm:p-4 rounded-xl bg-gray-50 border border-gray-100 min-w-0 overflow-hidden">
+    <div className="flex flex-col items-center text-center gap-1 p-2 sm:p-4 rounded-xl bg-gray-50 border border-gray-100 min-w-0">
       {icon}
-      <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-gray-400 w-full truncate">{title}</p>
-      <p className="text-base sm:text-lg font-extrabold text-gray-800 leading-tight w-full truncate">
-        {value}
+      <p className="text-[8px] sm:text-[10px] font-semibold uppercase tracking-wider text-gray-400">{title}</p>
+      <p className="text-sm sm:text-lg font-extrabold text-gray-800 leading-tight">
+        {value}<span className="text-xs sm:text-sm font-medium text-gray-500">{suffix}</span>
       </p>
-      <p className="text-[10px] text-gray-400">{unit}</p>
+      <p className="text-[9px] sm:text-[10px] text-gray-400">{unit}</p>
     </div>
   );
 }
