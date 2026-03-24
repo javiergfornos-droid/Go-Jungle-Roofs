@@ -24,10 +24,10 @@ export default function Hero({ onStart }) {
         </p>
 
         {/* Single CTA */}
-        <div className="mt-12 md:mt-16 flex justify-center">
+        <div className="mt-10 md:mt-16 flex justify-center">
           <button
             onClick={onStart}
-            className="px-10 py-4 rounded-full bg-fern text-white text-lg font-bold uppercase tracking-wider
+            className="px-8 py-3 md:px-10 md:py-4 rounded-full bg-fern text-white text-base md:text-lg font-bold uppercase tracking-wider
               hover:brightness-110 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer
               shadow-lg shadow-fern/30"
           >

@@ -227,9 +227,9 @@ export default function MapCalculator({ onBack }) {
 
   /* ================================================================== */
   return (
-    <div className="fixed inset-0 z-50 flex flex-col lg:flex-row bg-[#0a0a0a]">
+    <div className="fixed inset-0 z-50 flex flex-col lg:flex-row bg-[#0a0a0a] overflow-y-auto lg:overflow-hidden">
       {/* ───────── LEFT: MAP ───────── */}
-      <div className="relative w-full lg:w-1/2 h-[50vh] lg:h-full">
+      <div className="relative w-full lg:w-1/2 h-72 sm:h-80 lg:h-full shrink-0">
         <div ref={containerRef} className="absolute inset-0" />
 
         {/* Back */}
@@ -246,7 +246,7 @@ export default function MapCalculator({ onBack }) {
         {/* ── Address search bar ── */}
         <form
           onSubmit={handleSearch}
-          className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] flex w-[90%] max-w-md"
+          className="absolute top-14 sm:top-4 left-1/2 -translate-x-1/2 z-[1000] flex w-[85%] sm:w-[90%] max-w-md"
         >
           <input
             type="text"
@@ -267,7 +267,9 @@ export default function MapCalculator({ onBack }) {
         </form>
 
         {/* Floating toolbar */}
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 z-[1000] flex flex-col gap-3">
+        <div className="absolute z-[1000] flex gap-3
+          bottom-3 left-1/2 -translate-x-1/2 flex-row
+          lg:flex-col lg:left-4 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2 lg:translate-x-0">
           {[
             { Icon: Undo2, action: handleUndo, label: 'Undo', disabled: vertices.length === 0 },
             { Icon: Pencil, action: () => setEditMode((p) => !p), label: 'Edit', active: editMode },
@@ -307,13 +309,13 @@ export default function MapCalculator({ onBack }) {
       </div>
 
       {/* ───────── RIGHT: FORM & CALCULATOR ───────── */}
-      <div className="w-full lg:w-1/2 h-[50vh] lg:h-full overflow-y-auto bg-[#111111] text-white">
+      <div className="w-full lg:w-1/2 lg:h-full lg:overflow-y-auto bg-[#111111] text-white">
         <div className="p-6 lg:p-10 max-w-lg mx-auto space-y-8">
           {/* Header */}
           <div>
-            <h2 className="text-2xl font-bold">Available Surface</h2>
-            <p className="text-4xl font-extrabold text-fern mt-1">
-              {area.toFixed(1)} <span className="text-lg font-medium text-white/60">m²</span>
+            <h2 className="text-xl sm:text-2xl font-bold">Available Surface</h2>
+            <p className="text-3xl sm:text-4xl font-extrabold text-fern mt-1">
+              {area.toFixed(1)} <span className="text-base sm:text-lg font-medium text-white/60">m²</span>
             </p>
           </div>
 
@@ -378,12 +380,12 @@ export default function MapCalculator({ onBack }) {
           <section className="space-y-5">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-white/50">Project Details</h3>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <InputField label="Name" value={form.name} onChange={(v) => set('name', v)} required />
               <InputField label="Surname" value={form.surname} onChange={(v) => set('surname', v)} />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <InputField
                 label="Email"
                 type="email"
@@ -401,7 +403,7 @@ export default function MapCalculator({ onBack }) {
                 Building Address <span className="text-red-400">*</span>
               </p>
               <InputField label="Street and Number" value={form.street} onChange={(v) => set('street', v)} required />
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <InputField label="Postal Code" value={form.postalCode} onChange={(v) => set('postalCode', v)} />
                 <InputField label="City" value={form.city} onChange={(v) => set('city', v)} />
               </div>

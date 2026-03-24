@@ -71,30 +71,30 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
       {/* ── Dashboard Card ── */}
       <div className="w-full max-w-xl bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
         {/* ── Logo header ── */}
-        <div className="flex items-center justify-center py-8 border-b border-gray-100">
-          <span className="text-3xl font-extrabold tracking-tight">
+        <div className="flex items-center justify-center py-6 sm:py-8 border-b border-gray-100">
+          <span className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             <span className="text-fern">jungle</span>
             <span className="text-gray-800">roofs</span>
           </span>
         </div>
 
-        <div className="px-8 py-8 space-y-8">
+        <div className="px-5 py-6 sm:px-8 sm:py-8 space-y-6 sm:space-y-8">
           {/* ── Area summary ── */}
           <div className="text-center">
             <p className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-1">
               Your Rooftop
             </p>
-            <p className="text-3xl font-extrabold text-fern">
-              {area.toFixed(1)} <span className="text-base font-medium text-gray-400">m²</span>
+            <p className="text-2xl sm:text-3xl font-extrabold text-fern">
+              {area.toFixed(1)} <span className="text-sm sm:text-base font-medium text-gray-400">m²</span>
             </p>
           </div>
 
           {/* ── Public Aid Block ── */}
-          <div className="rounded-2xl bg-fern/5 border border-fern/15 p-6 text-center">
-            <p className="text-sm font-semibold text-gray-500 mb-3 leading-relaxed">
+          <div className="rounded-2xl bg-fern/5 border border-fern/15 p-4 sm:p-6 text-center">
+            <p className="text-xs sm:text-sm font-semibold text-gray-500 mb-2 sm:mb-3 leading-relaxed">
               Jungle Roofs can help you access a public aid amount of
             </p>
-            <p className="text-4xl font-extrabold text-fern leading-tight">
+            <p className="text-2xl sm:text-4xl font-extrabold text-fern leading-tight">
               {minAidFmt}€ — {maxAidFmt}€
             </p>
           </div>
@@ -108,7 +108,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
               This is how your green roof will transform and improve your life
             </p>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <MetricCard
                 icon={<Wind size={24} className="text-fern" />}
                 title="Energy Savings"
@@ -150,7 +150,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
           {/* ── CTA ── */}
           <div className="flex flex-col items-center gap-3">
             {sendStatus === 'success' ? (
-              <div className="flex items-center gap-3 px-8 py-4 rounded-xl bg-fern/10 border border-fern/20 text-fern text-sm font-semibold">
+              <div className="flex items-center gap-3 px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-fern/10 border border-fern/20 text-fern text-xs sm:text-sm font-semibold">
                 <CheckCircle size={20} />
                 Your request has been sent! Our team will contact you shortly.
               </div>
@@ -159,7 +159,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
                 <button
                   onClick={handleSchedule}
                   disabled={sendStatus === 'sending'}
-                  className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl text-white text-sm font-bold uppercase tracking-wider
+                  className={`w-full flex items-center justify-center gap-2 py-3 sm:py-4 rounded-xl text-white text-xs sm:text-sm font-bold uppercase tracking-wider
                     transition-all shadow-lg shadow-fern/20
                     ${sendStatus === 'sending'
                       ? 'bg-fern/60 cursor-wait'
