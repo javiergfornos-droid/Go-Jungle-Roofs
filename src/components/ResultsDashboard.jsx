@@ -6,19 +6,19 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
   const [errorMsg, setErrorMsg] = useState('');
 
   /* ── Budget calculations (hidden from user, sent in email) ── */
-  const budgetRaw = area * 180;
-  const budget = budgetRaw.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const budgetRaw = Math.ceil(area * 180);
+  const budget = budgetRaw.toLocaleString('es-ES');
 
   /* ── Public aid range (visible to user) ── */
-  const minAid = budgetRaw * 0.25;
-  const maxAid = budgetRaw * 0.60;
-  const minAidFmt = minAid.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  const maxAidFmt = maxAid.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const minAid = Math.ceil(budgetRaw * 0.25);
+  const maxAid = Math.ceil(budgetRaw * 0.60);
+  const minAidFmt = minAid.toLocaleString('es-ES');
+  const maxAidFmt = maxAid.toLocaleString('es-ES');
 
   /* ── Environmental metrics ── */
-  const energySavings = (area * 4.5).toFixed(0);
-  const waterRetention = (area * 400).toLocaleString('es-ES');
-  const co2Capture = (area * 2.0).toFixed(0);
+  const energySavings = Math.ceil(area * 4.5).toLocaleString('es-ES');
+  const waterRetention = Math.ceil(area * 400).toLocaleString('es-ES');
+  const co2Capture = Math.ceil(area * 2.0).toLocaleString('es-ES');
 
   /* ── Combined address for email ── */
   const fullAddress = [form.street, form.postalCode, form.city, form.country].filter(Boolean).join(', ');
@@ -40,7 +40,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
           buildingRole: form.buildingRole,
           objective: form.objective,
           timeline: form.timeline,
-          surfaceArea: area.toFixed(1),
+          surfaceArea: Math.ceil(area),
           totalBudget: budget,
           publicAidMin: minAidFmt,
           publicAidMax: maxAidFmt,
@@ -56,7 +56,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 overflow-auto p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 overflow-auto p-4 pt-16 sm:pt-4">
       {/* ── Back button ── */}
       <button
         onClick={onBack}
@@ -85,7 +85,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
               Your Rooftop
             </p>
             <p className="text-2xl sm:text-3xl font-extrabold text-fern">
-              {area.toFixed(1)} <span className="text-sm sm:text-base font-medium text-gray-400">m²</span>
+              {Math.ceil(area)} <span className="text-sm sm:text-base font-medium text-gray-400">m²</span>
             </p>
           </div>
 
@@ -185,10 +185,10 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
 /* ── Metric card ── */
 function MetricCard({ icon, title, value, unit }) {
   return (
-    <div className="flex flex-col items-center text-center gap-1.5 p-4 rounded-xl bg-gray-50 border border-gray-100">
+    <div className="flex flex-col items-center text-center gap-1.5 p-3 sm:p-4 rounded-xl bg-gray-50 border border-gray-100 min-w-0 overflow-hidden">
       {icon}
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">{title}</p>
-      <p className="text-lg font-extrabold text-gray-800 leading-tight">
+      <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-gray-400 w-full truncate">{title}</p>
+      <p className="text-base sm:text-lg font-extrabold text-gray-800 leading-tight w-full truncate">
         {value}
       </p>
       <p className="text-[10px] text-gray-400">{unit}</p>
