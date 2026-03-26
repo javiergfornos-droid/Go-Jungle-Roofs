@@ -1,4 +1,8 @@
+import { useTranslation } from 'react-i18next';
+
 export default function Hero({ onStart }) {
+  const { t } = useTranslation();
+
   return (
     <section id="hero" className="relative w-full min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background image with overlay */}
@@ -12,15 +16,15 @@ export default function Hero({ onStart }) {
       <div className="relative z-10 text-center px-6 max-w-5xl w-full py-24 md:py-32">
         {/* Tagline */}
         <p className="text-fern-light text-sm font-semibold tracking-[0.3em] uppercase mb-4">
-          Making Cities Cooler
+          {t('hero.tagline')}
         </p>
 
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-white leading-tight tracking-tight">
-          JOIN THE<br />JUNGLE
+          {t('hero.title1')}<br />{t('hero.title2')}
         </h1>
 
         <p className="mt-6 text-lg sm:text-xl text-white/80 max-w-xl mx-auto leading-relaxed">
-          Transforming grey cities into living, breathing ecosystems — one rooftop at a time.
+          {t('hero.subtitle')}
         </p>
 
         {/* Single CTA */}
@@ -31,7 +35,7 @@ export default function Hero({ onStart }) {
               hover:brightness-110 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer
               shadow-lg shadow-fern/30"
           >
-            Go to the simulator
+            {t('hero.cta')}
           </button>
         </div>
       </div>

@@ -1,26 +1,28 @@
 import { useState } from 'react';
 import { ArrowLeft, Leaf, Droplets, Wind, Loader2, CheckCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function ResultsDashboard({ area, form, assetCategory, onBack }) {
   const [sendStatus, setSendStatus] = useState('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const { t } = useTranslation();
 
-  /* ── Budget calculations (hidden from user, sent in email) ── */
+  /* -- Budget calculations (hidden from user, sent in email) -- */
   const budgetRaw = Math.ceil(area * 180);
   const budget = budgetRaw.toLocaleString('es-ES');
 
-  /* ── Public aid range (visible to user) ── */
+  /* -- Public aid range (visible to user) -- */
   const minAid = Math.ceil(budgetRaw * 0.25);
   const maxAid = Math.ceil(budgetRaw * 0.60);
   const minAidFmt = minAid.toLocaleString('es-ES');
   const maxAidFmt = maxAid.toLocaleString('es-ES');
 
-  /* ── Environmental metrics ── */
+  /* -- Environmental metrics -- */
   const energySavings = Math.ceil(area * 4.5).toLocaleString('es-ES');
   const waterRetention = Math.ceil(area * 400).toLocaleString('es-ES');
   const co2Capture = Math.ceil(area * 2.0).toLocaleString('es-ES');
 
-  /* ── Combined address for email ── */
+  /* -- Combined address for email -- */
   const fullAddress = [form.street, form.postalCode, form.city, form.country].filter(Boolean).join(', ');
 
   const handleSchedule = async () => {
@@ -57,7 +59,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white overflow-auto p-4 pt-16 sm:pt-4">
-      {/* ── Back button ── */}
+      {/* -- Back button -- */}
       <button
         onClick={onBack}
         className="fixed top-4 left-4 z-[60] flex items-center gap-2 px-4 py-2 rounded-xl
@@ -65,12 +67,12 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
           hover:bg-gray-50 transition-colors cursor-pointer shadow-sm"
       >
         <ArrowLeft size={16} />
-        Back
+        {t('map.back')}
       </button>
 
-      {/* ── Dashboard Card ── */}
+      {/* -- Dashboard Card -- */}
       <div className="w-full max-w-xl bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-        {/* ── Logo header ── */}
+        {/* -- Logo header -- */}
         <div className="flex items-center justify-center py-6 sm:py-8 border-b border-gray-100">
           <span className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             <span className="text-fern">jungle</span>
@@ -79,83 +81,76 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
         </div>
 
         <div className="px-5 py-6 sm:px-8 sm:py-8 space-y-6 sm:space-y-8">
-          {/* ── Area summary ── */}
+          {/* -- Area summary -- */}
           <div className="text-center">
             <p className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-1">
-              Your Rooftop
+              {t('results.yourRooftop')}
             </p>
             <p className="text-2xl sm:text-3xl font-extrabold text-fern">
-              {Math.ceil(area)} <span className="text-sm sm:text-base font-medium text-gray-400">m²</span>
+              {Math.ceil(area)} <span className="text-sm sm:text-base font-medium text-gray-400">m\u00b2</span>
             </p>
           </div>
 
-          {/* ── Public Aid Block ── */}
+          {/* -- Public Aid Block -- */}
           <div className="rounded-2xl bg-fern/5 border border-fern/15 p-4 sm:p-6 text-center">
             <p className="text-xs sm:text-sm font-semibold text-gray-500 mb-2 sm:mb-3 leading-relaxed">
-              Jungle Roofs can help you access a public aid amount of
+              {t('results.publicAidText')}
             </p>
             <p className="text-2xl sm:text-4xl font-extrabold text-fern leading-tight">
-              {minAidFmt}€ — {maxAidFmt}€
+              {minAidFmt}\u20ac \u2014 {maxAidFmt}\u20ac
             </p>
           </div>
 
-          {/* ── Environmental Impact KPIs ── */}
+          {/* -- Environmental Impact KPIs -- */}
           <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-1 text-center">
-              Environmental Impact
+              {t('results.environmentalImpact')}
             </p>
             <p className="text-center text-sm text-gray-500 leading-snug mb-5">
-              This is how your green roof will transform and improve your life
+              {t('results.impactSubtitle')}
             </p>
 
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <MetricCard
                 icon={<Wind size={20} className="text-fern" />}
-                title="Energy Savings"
+                title={t('results.energySavings')}
                 value={energySavings}
-                suffix="€"
-                unit="/ year"
+                suffix="\u20ac"
+                unit={t('results.perYear')}
               />
               <MetricCard
                 icon={<Droplets size={20} className="text-fern" />}
-                title="Water Retention"
+                title={t('results.waterRetention')}
                 value={waterRetention}
                 suffix=" L"
-                unit="/ year"
+                unit={t('results.perYear')}
               />
               <MetricCard
                 icon={<Leaf size={20} className="text-fern" />}
-                title="CO₂ Captured"
+                title={t('results.co2Captured')}
                 value={co2Capture}
                 suffix=" Kg"
-                unit="/ year"
+                unit={t('results.perYear')}
               />
             </div>
           </div>
 
-          {/* ── Disclaimer ── */}
+          {/* -- Disclaimer -- */}
           <div className="rounded-xl bg-gray-50 border border-gray-100 p-4">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">
-              Disclaimer
+              {t('results.disclaimer')}
             </p>
             <p className="text-[10px] leading-relaxed text-gray-400">
-              The figures shown (including cost, timeline, and projected returns/savings) are preliminary estimates
-              for information purposes only and are non-binding. They are based on the inputs provided and standard
-              assumptions, and do not constitute an offer, quotation, contract, or guarantee of price, schedule,
-              performance, or outcomes. Actual scope, timing, and costs may change materially following a technical
-              site visit, measurements, condition assessment (e.g., structure/waterproofing/drainage), regulatory
-              requirements, access constraints, and supplier availability/market pricing. Any returns/savings are
-              projections subject to assumptions and uncertainty. The next step is to schedule a site visit to
-              validate the project and confirm a final, binding proposal.
+              {t('results.disclaimerText')}
             </p>
           </div>
 
-          {/* ── CTA ── */}
+          {/* -- CTA -- */}
           <div className="flex flex-col items-center gap-3">
             {sendStatus === 'success' ? (
               <div className="flex items-center gap-3 px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-fern/10 border border-fern/20 text-fern text-xs sm:text-sm font-semibold">
                 <CheckCircle size={20} />
-                Your request has been sent! Our team will contact you shortly.
+                {t('results.successMessage')}
               </div>
             ) : (
               <>
@@ -169,11 +164,11 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
                       : 'bg-fern hover:brightness-110 cursor-pointer'}`}
                 >
                   {sendStatus === 'sending' && <Loader2 size={18} className="animate-spin" />}
-                  {sendStatus === 'sending' ? 'Sending...' : 'I want to schedule a meeting with Jungle Roofs'}
+                  {sendStatus === 'sending' ? t('results.sending') : t('results.scheduleMeeting')}
                 </button>
                 {sendStatus === 'error' && (
                   <p className="text-red-500 text-sm">
-                    Something went wrong: {errorMsg || 'Unknown error'}. Please try again.
+                    {t('results.errorMessage', { error: errorMsg || 'Unknown error' })}
                   </p>
                 )}
               </>
@@ -185,7 +180,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
   );
 }
 
-/* ── Metric card ── */
+/* -- Metric card -- */
 function MetricCard({ icon, title, value, suffix, unit }) {
   return (
     <div className="flex flex-col items-center text-center gap-1 p-2 sm:p-4 rounded-xl bg-gray-50 border border-gray-100 min-w-0">

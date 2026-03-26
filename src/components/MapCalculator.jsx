@@ -2,9 +2,10 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Undo2, Pencil, Trash2, Info, ArrowLeft, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import ResultsDashboard from './ResultsDashboard';
 
-/* ── Geodesic area (m²) from an array of {lat,lng} ── */
+/* -- Geodesic area (m2) from an array of {lat,lng} -- */
 function calcArea(pts) {
   if (pts.length < 3) return 0;
   const toRad = (d) => (d * Math.PI) / 180;
@@ -19,13 +20,7 @@ function calcArea(pts) {
   return Math.abs((sum * R * R) / 2);
 }
 
-/* ── Form option lists ── */
-const ASSET_TYPES = ['Residential', 'Office', 'Hotel', 'Industrial', 'Commercial'];
-const ROLE_OPTIONS = ['Owner', 'President', 'Tenant', 'Administrator'];
-const OBJECTIVE_OPTIONS = ['Fix a problem', 'Usable space', 'Green project'];
-const TIMELINE_OPTIONS = ['Urgent', '6 months', 'No date'];
-
-/* ── Leaflet vertex icon ── */
+/* -- Leaflet vertex icon -- */
 const VERTEX_ICON = L.divIcon({
   className: '',
   html: '<div style="width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #7FA068;box-shadow:0 0 8px #7FA068"></div>',
@@ -33,34 +28,36 @@ const VERTEX_ICON = L.divIcon({
   iconAnchor: [7, 7],
 });
 
-/* ── Email validation ── */
+/* -- Email validation -- */
 const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
 /* ================================================================== */
 export default function MapCalculator({ onBack }) {
-  /* ── Refs ── */
+  const { t } = useTranslation();
+
+  /* -- Refs -- */
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const layerGroupRef = useRef(null);
 
-  /* ── Map state ── */
+  /* -- Map state -- */
   const [vertices, setVertices] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  /* ── Geocoding search ── */
+  /* -- Geocoding search -- */
   const [searchQuery, setSearchQuery] = useState('');
   const [searching, setSearching] = useState(false);
 
-  /* ── Manual area ── */
+  /* -- Manual area -- */
   const [manualMode, setManualMode] = useState(false);
   const [manualArea, setManualArea] = useState('');
 
-  /* ── Calculator state ── */
+  /* -- Calculator state -- */
   const [assetCategory, setAssetCategory] = useState('');
 
-  /* ── Form state ── */
+  /* -- Form state -- */
   const [form, setForm] = useState({
     name: '',
     surname: '',
@@ -76,20 +73,45 @@ export default function MapCalculator({ onBack }) {
     timeline: '',
   });
 
-  /* ── Derived values ── */
+  /* -- Translated option lists -- */
+  const ASSET_TYPES = [
+    { value: 'Residential', labelKey: 'map.residential' },
+    { value: 'Office', labelKey: 'map.office' },
+    { value: 'Hotel', labelKey: 'map.hotel' },
+    { value: 'Industrial', labelKey: 'map.industrial' },
+    { value: 'Commercial', labelKey: 'map.commercial' },
+  ];
+  const ROLE_OPTIONS = [
+    { value: 'Owner', labelKey: 'map.owner' },
+    { value: 'President', labelKey: 'map.president' },
+    { value: 'Tenant', labelKey: 'map.tenant' },
+    { value: 'Administrator', labelKey: 'map.administrator' },
+  ];
+  const OBJECTIVE_OPTIONS = [
+    { value: 'Fix a problem', labelKey: 'map.fixProblem' },
+    { value: 'Usable space', labelKey: 'map.usableSpace' },
+    { value: 'Green project', labelKey: 'map.greenProject' },
+  ];
+  const TIMELINE_OPTIONS = [
+    { value: 'Urgent', labelKey: 'map.urgent' },
+    { value: '6 months', labelKey: 'map.sixMonths' },
+    { value: 'No date', labelKey: 'map.noDate' },
+  ];
+
+  /* -- Derived values -- */
   const area = useMemo(() => {
     if (manualMode && manualArea) return parseFloat(manualArea);
     return calcArea(vertices);
   }, [vertices, manualMode, manualArea]);
 
-  /* ── Required‐field validation ── */
+  /* -- Required-field validation -- */
   const nameValid = form.name.trim().length > 0;
   const emailValid = isValidEmail(form.email);
   const addressValid = form.street.trim().length > 0;
   const areaValid = area > 0;
   const isComplete = nameValid && emailValid && addressValid && areaValid;
 
-  /* ────────────────────── GEOCODING ────────────────────── */
+  /* ---------------------- GEOCODING ---------------------- */
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -110,7 +132,7 @@ export default function MapCalculator({ onBack }) {
     }
   };
 
-  /* ────────────────────── MAP INIT ────────────────────── */
+  /* ---------------------- MAP INIT ---------------------- */
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -147,7 +169,7 @@ export default function MapCalculator({ onBack }) {
     };
   }, []);
 
-  /* ────────────────────── MAP CLICK → ADD VERTEX ────────────────────── */
+  /* ---------------------- MAP CLICK -> ADD VERTEX ---------------------- */
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -159,7 +181,7 @@ export default function MapCalculator({ onBack }) {
     return () => map.off('click', handler);
   }, [editMode]);
 
-  /* ────────────────────── RENDER POLYGON + MARKERS ────────────────────── */
+  /* ---------------------- RENDER POLYGON + MARKERS ---------------------- */
   useEffect(() => {
     const group = layerGroupRef.current;
     if (!group) return;
@@ -198,14 +220,14 @@ export default function MapCalculator({ onBack }) {
     });
   }, [vertices, editMode]);
 
-  /* ── Toolbar actions ── */
+  /* -- Toolbar actions -- */
   const handleUndo = () => setVertices((prev) => prev.slice(0, -1));
   const handleTrash = () => {
     setVertices([]);
     setEditMode(false);
   };
 
-  /* ── Form helpers ── */
+  /* -- Form helpers -- */
   const set = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const handleSubmit = () => {
@@ -213,7 +235,7 @@ export default function MapCalculator({ onBack }) {
     setShowResults(true);
   };
 
-  /* ── Show results dashboard after submission ── */
+  /* -- Show results dashboard after submission -- */
   if (showResults) {
     return (
       <ResultsDashboard
@@ -228,7 +250,7 @@ export default function MapCalculator({ onBack }) {
   /* ================================================================== */
   return (
     <div className="fixed inset-0 z-50 flex flex-col lg:flex-row bg-white overflow-y-auto lg:overflow-hidden">
-      {/* ───────── LEFT: MAP ───────── */}
+      {/* --------- LEFT: MAP --------- */}
       <div className="relative w-full lg:w-1/2 h-72 sm:h-80 lg:h-full shrink-0">
         <div ref={containerRef} className="absolute inset-0" />
 
@@ -240,10 +262,10 @@ export default function MapCalculator({ onBack }) {
             hover:bg-gray-50 transition-colors cursor-pointer shadow-sm"
         >
           <ArrowLeft size={16} />
-          Back
+          {t('map.back')}
         </button>
 
-        {/* ── Address search bar ── */}
+        {/* -- Address search bar -- */}
         <form
           onSubmit={handleSearch}
           className="absolute top-14 sm:top-4 left-1/2 -translate-x-1/2 z-[1000] flex w-[85%] sm:w-[90%] max-w-md"
@@ -252,7 +274,7 @@ export default function MapCalculator({ onBack }) {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search address..."
+            placeholder={t('map.searchAddress')}
             className="flex-1 px-4 py-2.5 rounded-l-xl bg-white border border-gray-200
               text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-fern/50 shadow-sm"
           />
@@ -271,10 +293,10 @@ export default function MapCalculator({ onBack }) {
           bottom-3 left-1/2 -translate-x-1/2 flex-row
           lg:flex-col lg:left-4 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2 lg:translate-x-0">
           {[
-            { Icon: Undo2, action: handleUndo, label: 'Undo', disabled: vertices.length === 0 },
-            { Icon: Pencil, action: () => setEditMode((p) => !p), label: 'Edit', active: editMode },
-            { Icon: Trash2, action: handleTrash, label: 'Trash', disabled: vertices.length === 0 },
-            { Icon: Info, action: () => setShowInfo((p) => !p), label: 'Info', active: showInfo },
+            { Icon: Undo2, action: handleUndo, label: t('map.undo'), disabled: vertices.length === 0 },
+            { Icon: Pencil, action: () => setEditMode((p) => !p), label: t('map.edit'), active: editMode },
+            { Icon: Trash2, action: handleTrash, label: t('map.trash'), disabled: vertices.length === 0 },
+            { Icon: Info, action: () => setShowInfo((p) => !p), label: t('map.info'), active: showInfo },
           ].map(({ Icon, action, label, disabled, active }) => (
             <button
               key={label}
@@ -294,32 +316,32 @@ export default function MapCalculator({ onBack }) {
         {/* Info overlay */}
         {showInfo && (
           <div className="absolute bottom-4 left-4 right-4 z-[1000] p-4 rounded-xl bg-white border border-gray-200 text-gray-700 text-sm shadow-sm">
-            <p><strong>Vertices:</strong> {vertices.length}</p>
-            <p><strong>Surface area:</strong> {area.toFixed(1)} m²</p>
-            <p className="text-gray-400 mt-1 text-xs">Click on the map to draw your rooftop</p>
+            <p><strong>{t('map.vertices')}:</strong> {vertices.length}</p>
+            <p><strong>{t('map.surfaceArea')}:</strong> {area.toFixed(1)} m\u00b2</p>
+            <p className="text-gray-400 mt-1 text-xs">{t('map.drawHint')}</p>
           </div>
         )}
 
         {/* Live area badge */}
         {vertices.length >= 3 && !manualMode && (
           <div className="absolute top-4 right-16 z-[1000] px-4 py-2 rounded-xl bg-white border border-fern/30 text-fern text-sm font-semibold shadow-sm">
-            {area.toFixed(1)} m²
+            {area.toFixed(1)} m\u00b2
           </div>
         )}
       </div>
 
-      {/* ───────── RIGHT: FORM & CALCULATOR ───────── */}
+      {/* --------- RIGHT: FORM & CALCULATOR --------- */}
       <div className="w-full lg:w-1/2 lg:h-full lg:overflow-y-auto bg-white text-gray-900">
         <div className="p-6 lg:p-10 max-w-lg mx-auto space-y-8">
           {/* Header */}
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Available Surface</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{t('map.availableSurface')}</h2>
             <p className="text-3xl sm:text-4xl font-extrabold text-fern mt-1">
-              {area.toFixed(1)} <span className="text-base sm:text-lg font-medium text-gray-400">m²</span>
+              {area.toFixed(1)} <span className="text-base sm:text-lg font-medium text-gray-400">m\u00b2</span>
             </p>
           </div>
 
-          {/* ── Manual area toggle ── */}
+          {/* -- Manual area toggle -- */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setManualMode((p) => !p)}
@@ -331,13 +353,13 @@ export default function MapCalculator({ onBack }) {
                   ${manualMode ? 'translate-x-5' : ''}`}
               />
             </button>
-            <span className="text-sm text-gray-500">I prefer to enter surface area manually</span>
+            <span className="text-sm text-gray-500">{t('map.manualToggle')}</span>
           </div>
 
           {manualMode && (
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1.5">
-                Surface area (m²) <span className="text-red-400">*</span>
+                {t('map.surfaceAreaLabel')} <span className="text-red-400">*</span>
               </label>
               <input
                 type="number"
@@ -352,79 +374,82 @@ export default function MapCalculator({ onBack }) {
             </div>
           )}
 
-          {/* ── Calculator ── */}
+          {/* -- Calculator -- */}
           <section className="space-y-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Calculator</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">{t('map.calculator')}</h3>
 
-            {/* Asset category cards */}
+            {/* Asset category cards - thick dark green borders */}
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-3">Property type</label>
+              <label className="block text-sm font-medium text-gray-500 mb-3">{t('map.propertyType')}</label>
               <div className="grid grid-cols-2 gap-3">
-                {['Unifamiliar', 'Comunidad'].map((cat) => (
+                {[
+                  { value: 'Unifamiliar', labelKey: 'map.unifamiliar' },
+                  { value: 'Comunidad', labelKey: 'map.comunidad' },
+                ].map(({ value, labelKey }) => (
                   <button
-                    key={cat}
-                    onClick={() => setAssetCategory(cat)}
-                    className={`px-4 py-3 rounded-xl border text-sm font-semibold transition-all cursor-pointer
-                      ${assetCategory === cat
-                        ? 'border-fern bg-fern/10 text-fern'
-                        : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300'}`}
+                    key={value}
+                    onClick={() => setAssetCategory(value)}
+                    className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer
+                      ${assetCategory === value
+                        ? 'border-3 border-fern-dark bg-fern/10 text-fern'
+                        : 'border-3 border-fern-dark/30 bg-white text-gray-600 hover:border-fern-dark/60'}`}
                   >
-                    {cat}
+                    {t(labelKey)}
                   </button>
                 ))}
               </div>
             </div>
           </section>
 
-          {/* ── Questionnaire ── */}
+          {/* -- Questionnaire -- */}
           <section className="space-y-5">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Project Details</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">{t('map.projectDetails')}</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <InputField label="Name" value={form.name} onChange={(v) => set('name', v)} required />
-              <InputField label="Surname" value={form.surname} onChange={(v) => set('surname', v)} />
+              <InputField label={t('map.name')} value={form.name} onChange={(v) => set('name', v)} required />
+              <InputField label={t('map.surname')} value={form.surname} onChange={(v) => set('surname', v)} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <InputField
-                label="Email"
+                label={t('map.email')}
                 type="email"
                 value={form.email}
                 onChange={(v) => set('email', v)}
                 required
-                error={form.email.length > 0 && !emailValid ? 'Enter a valid email' : ''}
+                error={form.email.length > 0 && !emailValid ? t('map.invalidEmail') : ''}
               />
-              <InputField label="Phone" type="tel" value={form.phone} onChange={(v) => set('phone', v)} />
+              <InputField label={t('map.phone')} type="tel" value={form.phone} onChange={(v) => set('phone', v)} />
             </div>
 
-            {/* ── Address group ── */}
+            {/* -- Address group -- */}
             <div className="space-y-3 p-4 rounded-xl border border-gray-200 bg-gray-50/50">
               <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                Building Address <span className="text-red-400">*</span>
+                {t('map.buildingAddress')} <span className="text-red-400">*</span>
               </p>
-              <InputField label="Street and Number" value={form.street} onChange={(v) => set('street', v)} required />
+              <InputField label={t('map.streetAndNumber')} value={form.street} onChange={(v) => set('street', v)} required />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <InputField label="Postal Code" value={form.postalCode} onChange={(v) => set('postalCode', v)} />
-                <InputField label="City" value={form.city} onChange={(v) => set('city', v)} />
+                <InputField label={t('map.postalCode')} value={form.postalCode} onChange={(v) => set('postalCode', v)} />
+                <InputField label={t('map.city')} value={form.city} onChange={(v) => set('city', v)} />
               </div>
-              <InputField label="Country" value={form.country} onChange={(v) => set('country', v)} />
+              <InputField label={t('map.country')} value={form.country} onChange={(v) => set('country', v)} />
             </div>
 
-            <SelectField label="Asset Type" value={form.assetType} onChange={(v) => set('assetType', v)} options={ASSET_TYPES} />
-            <SelectField label="Role" value={form.buildingRole} onChange={(v) => set('buildingRole', v)} options={ROLE_OPTIONS} />
+            <SelectField label={t('map.assetType')} value={form.assetType} onChange={(v) => set('assetType', v)} options={ASSET_TYPES} />
+            <SelectField label={t('map.role')} value={form.buildingRole} onChange={(v) => set('buildingRole', v)} options={ROLE_OPTIONS} />
 
-            <RadioGroup label="Primary Objective" value={form.objective} onChange={(v) => set('objective', v)} options={OBJECTIVE_OPTIONS} />
-            <RadioGroup label="Timeline" value={form.timeline} onChange={(v) => set('timeline', v)} options={TIMELINE_OPTIONS} />
+            <RadioGroup label={t('map.primaryObjective')} value={form.objective} onChange={(v) => set('objective', v)} options={OBJECTIVE_OPTIONS} />
+            <RadioGroup label={t('map.timeline')} value={form.timeline} onChange={(v) => set('timeline', v)} options={TIMELINE_OPTIONS} />
           </section>
 
-          {/* ── Required fields hint ── */}
+          {/* -- Required fields hint -- */}
           {!isComplete && (
             <p className="text-xs text-gray-400">
-              Fill required fields (Name, Email, Address, Surface Area) to continue.
+              {t('map.requiredHint')}
             </p>
           )}
 
-          {/* ── Submit ── */}
+          {/* -- Submit -- */}
           <button
             onClick={handleSubmit}
             disabled={!isComplete}
@@ -433,7 +458,7 @@ export default function MapCalculator({ onBack }) {
                 ? 'bg-fern text-white hover:brightness-110 cursor-pointer'
                 : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
           >
-            View Project Dashboard
+            {t('map.viewDashboard')}
           </button>
 
           <div className="h-8" />
@@ -443,7 +468,7 @@ export default function MapCalculator({ onBack }) {
   );
 }
 
-/* ── tiny sub-components ── */
+/* -- tiny sub-components -- */
 
 function InputField({ label, value, onChange, type = 'text', required, error }) {
   return (
@@ -465,6 +490,7 @@ function InputField({ label, value, onChange, type = 'text', required, error }) 
 }
 
 function SelectField({ label, value, onChange, options }) {
+  const { t } = useTranslation();
   return (
     <div>
       <label className="block text-sm font-medium text-gray-500 mb-1.5">{label}</label>
@@ -474,9 +500,9 @@ function SelectField({ label, value, onChange, options }) {
         className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 text-sm
           focus:outline-none focus:border-fern/50 focus:ring-1 focus:ring-fern/30 transition-colors appearance-none"
       >
-        <option value="" className="bg-white">Select...</option>
+        <option value="" className="bg-white">{t('map.select')}</option>
         {options.map((o) => (
-          <option key={o} value={o} className="bg-white">{o}</option>
+          <option key={o.value} value={o.value} className="bg-white">{t(o.labelKey)}</option>
         ))}
       </select>
     </div>
@@ -484,20 +510,21 @@ function SelectField({ label, value, onChange, options }) {
 }
 
 function RadioGroup({ label, value, onChange, options }) {
+  const { t } = useTranslation();
   return (
     <div>
       <label className="block text-sm font-medium text-gray-500 mb-2">{label}</label>
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <button
-            key={o}
-            onClick={() => onChange(o)}
-            className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer
-              ${value === o
-                ? 'border-fern bg-fern/10 text-fern'
-                : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300'}`}
+            key={o.value}
+            onClick={() => onChange(o.value)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer
+              ${value === o.value
+                ? 'border-3 border-fern-dark bg-fern/10 text-fern'
+                : 'border-3 border-fern-dark/30 bg-white text-gray-500 hover:border-fern-dark/60'}`}
           >
-            {o}
+            {t(o.labelKey)}
           </button>
         ))}
       </div>
