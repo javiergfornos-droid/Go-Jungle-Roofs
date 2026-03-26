@@ -87,7 +87,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
               {t('results.yourRooftop')}
             </p>
             <p className="text-2xl sm:text-3xl font-extrabold text-fern">
-              {Math.ceil(area)} <span className="text-sm sm:text-base font-medium text-gray-400">m\u00b2</span>
+              {Math.ceil(area)} <span className="text-sm sm:text-base font-medium text-gray-400">m²</span>
             </p>
           </div>
 
@@ -97,7 +97,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
               {t('results.publicAidText')}
             </p>
             <p className="text-2xl sm:text-4xl font-extrabold text-fern leading-tight">
-              {minAidFmt}\u20ac \u2014 {maxAidFmt}\u20ac
+              {minAidFmt}€ — {maxAidFmt}€
             </p>
           </div>
 
@@ -115,7 +115,7 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
                 icon={<Wind size={20} className="text-fern" />}
                 title={t('results.energySavings')}
                 value={energySavings}
-                suffix="\u20ac"
+                suffix="€"
                 unit={t('results.perYear')}
               />
               <MetricCard

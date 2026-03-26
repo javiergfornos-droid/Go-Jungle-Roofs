@@ -317,7 +317,7 @@ export default function MapCalculator({ onBack }) {
         {showInfo && (
           <div className="absolute bottom-4 left-4 right-4 z-[1000] p-4 rounded-xl bg-white border border-gray-200 text-gray-700 text-sm shadow-sm">
             <p><strong>{t('map.vertices')}:</strong> {vertices.length}</p>
-            <p><strong>{t('map.surfaceArea')}:</strong> {area.toFixed(1)} m\u00b2</p>
+            <p><strong>{t('map.surfaceArea')}:</strong> {area.toFixed(1)} m²</p>
             <p className="text-gray-400 mt-1 text-xs">{t('map.drawHint')}</p>
           </div>
         )}
@@ -325,7 +325,7 @@ export default function MapCalculator({ onBack }) {
         {/* Live area badge */}
         {vertices.length >= 3 && !manualMode && (
           <div className="absolute top-4 right-16 z-[1000] px-4 py-2 rounded-xl bg-white border border-fern/30 text-fern text-sm font-semibold shadow-sm">
-            {area.toFixed(1)} m\u00b2
+            {area.toFixed(1)} m²
           </div>
         )}
       </div>
@@ -337,7 +337,7 @@ export default function MapCalculator({ onBack }) {
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{t('map.availableSurface')}</h2>
             <p className="text-3xl sm:text-4xl font-extrabold text-fern mt-1">
-              {area.toFixed(1)} <span className="text-base sm:text-lg font-medium text-gray-400">m\u00b2</span>
+              {area.toFixed(1)} <span className="text-base sm:text-lg font-medium text-gray-400">m²</span>
             </p>
           </div>
 

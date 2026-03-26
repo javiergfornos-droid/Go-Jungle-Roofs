@@ -10,7 +10,7 @@ export default function Transformations() {
       labelKey: 'transformations.residential',
       titleKey: 'transformations.project1Title',
       locationKey: 'transformations.project1Location',
-      area: '120 m\u00b2',
+      area: '120 m²',
       images: {
         before: '/images/project1-before.jpg',
         during: '/images/project1-during.jpg',
@@ -22,7 +22,7 @@ export default function Transformations() {
       labelKey: 'transformations.corporate',
       titleKey: 'transformations.project2Title',
       locationKey: 'transformations.project2Location',
-      area: '850 m\u00b2',
+      area: '850 m²',
       images: {
         before: '/images/project2-before.jpg',
         during: '/images/project2-during.jpg',
@@ -34,7 +34,7 @@ export default function Transformations() {
       labelKey: 'transformations.public',
       titleKey: 'transformations.project3Title',
       locationKey: 'transformations.project3Location',
-      area: '400 m\u00b2',
+      area: '400 m²',
       images: {
         before: '/images/project3-before.jpg',
         during: '/images/project3-during.jpg',
@@ -97,7 +97,7 @@ export default function Transformations() {
               <img
                 key={`${p.id}-${ph.key}`}
                 src={p.images[ph.key]}
-                alt={`${t(p.labelKey)} \u2014 ${t(ph.labelKey)}`}
+                alt={`${t(p.labelKey)} — ${t(ph.labelKey)}`}
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
                   pIdx === activeProject && ph.key === activePhase
                     ? 'opacity-100'
@@ -110,7 +110,7 @@ export default function Transformations() {
           {/* Fallback placeholder */}
           <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm pointer-events-none">
             <span className="bg-white/80 px-4 py-2 rounded-lg">
-              {t(project.labelKey)} \u2014 {activePhase.charAt(0).toUpperCase() + activePhase.slice(1)}
+              {t(project.labelKey)} — {activePhase.charAt(0).toUpperCase() + activePhase.slice(1)}
             </span>
           </div>
 
@@ -118,7 +118,7 @@ export default function Transformations() {
           <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent">
             <h3 className="text-white font-bold text-lg">{t(project.titleKey)}</h3>
             <p className="text-white/70 text-sm">
-              {t(project.locationKey)} \u00b7 {project.area}
+              {t(project.locationKey)} · {project.area}
             </p>
           </div>
         </div>
