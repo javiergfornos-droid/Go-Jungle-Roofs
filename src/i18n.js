@@ -107,7 +107,9 @@ const resources = {
       // ResultsDashboard
       results: {
         yourRooftop: 'Your Rooftop',
-        publicAidText: 'Jungle Roofs can help you access a public aid amount of',
+        publicAidBefore: 'Jungle Roofs can help you',
+        publicAidHighlight: 'save',
+        publicAidAfter: 'with a public aid amount of',
         environmentalImpact: 'Environmental Impact',
         impactSubtitle: 'This is how your green roof will transform and improve your life',
         energySavings: 'Energy Savings',
@@ -223,7 +225,9 @@ const resources = {
       },
       results: {
         yourRooftop: 'Tu Azotea',
-        publicAidText: 'Jungle Roofs puede ayudarte a acceder a una ayuda p\u00fablica de',
+        publicAidBefore: 'Jungle Roofs puede ayudarte a',
+        publicAidHighlight: 'ahorrar',
+        publicAidAfter: 'con una ayuda p\u00fablica de',
         environmentalImpact: 'Impacto Ambiental',
         impactSubtitle: 'As\u00ed es como tu techo verde transformar\u00e1 y mejorar\u00e1 tu vida',
         energySavings: 'Ahorro Energ\u00e9tico',
@@ -338,7 +342,9 @@ const resources = {
       },
       results: {
         yourRooftop: 'El Teu Terrat',
-        publicAidText: 'Jungle Roofs pot ajudar-te a accedir a una ajuda p\u00fablica de',
+        publicAidBefore: 'Jungle Roofs pot ajudar-te a',
+        publicAidHighlight: 'estalviar',
+        publicAidAfter: 'amb una ajuda p\u00fablica de',
         environmentalImpact: 'Impacte Ambiental',
         impactSubtitle: 'Aix\u00ed \u00e9s com el teu sostre verd transformar\u00e0 i millorar\u00e0 la teva vida',
         energySavings: 'Estalvi Energ\u00e8tic',

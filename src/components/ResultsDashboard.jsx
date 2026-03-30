@@ -94,7 +94,9 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
           {/* -- Public Aid Block -- */}
           <div className="rounded-2xl bg-fern/5 border border-fern/15 p-4 sm:p-6 text-center">
             <p className="text-xs sm:text-sm font-semibold text-gray-500 mb-2 sm:mb-3 leading-relaxed">
-              {t('results.publicAidText')}
+              {t('results.publicAidBefore')}{' '}
+              <span className="text-fern font-extrabold uppercase">{t('results.publicAidHighlight')}</span>{' '}
+              {t('results.publicAidAfter')}
             </p>
             <p className="text-2xl sm:text-4xl font-extrabold text-fern leading-tight">
               {minAidFmt}€ — {maxAidFmt}€
