@@ -137,16 +137,6 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
             </div>
           </div>
 
-          {/* -- Disclaimer -- */}
-          <div className="rounded-xl bg-gray-50 border border-gray-100 p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">
-              {t('results.disclaimer')}
-            </p>
-            <p className="text-[10px] leading-relaxed text-gray-400">
-              {t('results.disclaimerText')}
-            </p>
-          </div>
-
           {/* -- CTA -- */}
           <div className="flex flex-col items-center gap-3">
             {sendStatus === 'success' ? (
@@ -175,6 +165,16 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
                 )}
               </>
             )}
+          </div>
+
+          {/* -- Disclaimer -- */}
+          <div className="rounded-xl bg-gray-50 border border-gray-100 p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">
+              {t('results.disclaimer')}
+            </p>
+            <p className="text-[10px] leading-relaxed text-gray-400">
+              {t('results.disclaimerText')}
+            </p>
           </div>
         </div>
       </div>
