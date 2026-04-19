@@ -39,6 +39,7 @@ export default function MapCalculator({ onBack }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const layerGroupRef = useRef(null);
+  const hasSentInitialLead = useRef(false);
 
   /* -- Map state -- */
   const [vertices, setVertices] = useState([]);
@@ -232,6 +233,43 @@ export default function MapCalculator({ onBack }) {
 
   const handleSubmit = () => {
     if (!isComplete) return;
+
+    if (!hasSentInitialLead.current && emailValid && addressValid) {
+      hasSentInitialLead.current = true;
+      const budgetRaw = Math.ceil(area * 180);
+      const minAid = Math.ceil(budgetRaw * 0.25);
+      const maxAid = Math.ceil(budgetRaw * 0.60);
+      const fullAddress = [form.street, form.postalCode, form.city, form.country].filter(Boolean).join(', ');
+
+      fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'lead',
+          name: form.name,
+          surname: form.surname,
+          email: form.email,
+          phone: form.phone,
+          address: fullAddress,
+          city: form.city,
+          assetType: form.assetType,
+          assetCategory,
+          buildingRole: form.buildingRole,
+          objective: form.objective,
+          timeline: form.timeline,
+          surfaceArea: Math.ceil(area),
+          totalBudget: budgetRaw.toLocaleString('es-ES'),
+          publicAidMin: minAid.toLocaleString('es-ES'),
+          publicAidMax: maxAid.toLocaleString('es-ES'),
+          energySavings: Math.ceil(area * 4.5).toLocaleString('es-ES'),
+          waterRetention: Math.ceil(area * 400).toLocaleString('es-ES'),
+          co2Capture: Math.ceil(area * 2.0).toLocaleString('es-ES'),
+        }),
+      }).catch((err) => {
+        console.error('Failed to send initial lead email:', err);
+      });
+    }
+
     setShowResults(true);
   };
 
