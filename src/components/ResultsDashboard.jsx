@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { ArrowLeft, Leaf, Droplets, Wind, Loader2, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Leaf, Droplets, Wind, CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export default function ResultsDashboard({ area, form, assetCategory, onBack }) {
   const [sendStatus, setSendStatus] = useState('idle');
-  const [errorMsg, setErrorMsg] = useState('');
   const { t } = useTranslation();
 
   /* -- Budget calculations (hidden from user, sent in email) -- */
@@ -25,36 +24,24 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
   /* -- Combined address for email -- */
   const fullAddress = [form.street, form.postalCode, form.city, form.country].filter(Boolean).join(', ');
 
-  const handleSchedule = async () => {
-    setSendStatus('sending');
-    try {
-      const res = await fetch('/api/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: form.name,
-          surname: form.surname,
-          email: form.email,
-          phone: form.phone,
-          address: fullAddress,
-          assetType: form.assetType,
-          assetCategory,
-          buildingRole: form.buildingRole,
-          objective: form.objective,
-          timeline: form.timeline,
-          surfaceArea: Math.ceil(area),
-          totalBudget: budget,
-          publicAidMin: minAidFmt,
-          publicAidMax: maxAidFmt,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-      setSendStatus('success');
-    } catch (e) {
-      setErrorMsg(e.message);
-      setSendStatus('error');
-    }
+  const handleSchedule = () => {
+    setSendStatus('success');
+
+    fetch('/api/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'meeting',
+        name: form.name,
+        surname: form.surname,
+        email: form.email,
+        phone: form.phone,
+        address: fullAddress,
+        surfaceArea: Math.ceil(area),
+      }),
+    }).catch((err) => {
+      console.error('Failed to send meeting confirmation email:', err);
+    });
   };
 
   return (
@@ -145,25 +132,13 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
                 {t('results.successMessage')}
               </div>
             ) : (
-              <>
-                <button
-                  onClick={handleSchedule}
-                  disabled={sendStatus === 'sending'}
-                  className={`w-full flex items-center justify-center gap-2 py-3 sm:py-4 rounded-xl text-white text-xs sm:text-sm font-bold uppercase tracking-wider
-                    transition-all shadow-lg shadow-fern/20
-                    ${sendStatus === 'sending'
-                      ? 'bg-fern/60 cursor-wait'
-                      : 'bg-fern hover:brightness-110 cursor-pointer'}`}
-                >
-                  {sendStatus === 'sending' && <Loader2 size={18} className="animate-spin" />}
-                  {sendStatus === 'sending' ? t('results.sending') : t('results.scheduleMeeting')}
-                </button>
-                {sendStatus === 'error' && (
-                  <p className="text-red-500 text-sm">
-                    {t('results.errorMessage', { error: errorMsg || 'Unknown error' })}
-                  </p>
-                )}
-              </>
+              <button
+                onClick={handleSchedule}
+                className="w-full flex items-center justify-center gap-2 py-3 sm:py-4 rounded-xl text-white text-xs sm:text-sm font-bold uppercase tracking-wider
+                  transition-all shadow-lg shadow-fern/20 bg-fern hover:brightness-110 cursor-pointer"
+              >
+                {t('results.scheduleMeeting')}
+              </button>
             )}
           </div>
 
