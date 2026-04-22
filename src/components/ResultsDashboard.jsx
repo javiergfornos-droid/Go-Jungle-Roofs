@@ -27,6 +27,14 @@ export default function ResultsDashboard({ area, form, assetCategory, onBack }) 
   const handleSchedule = () => {
     setSendStatus('success');
 
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'conversion', {
+        send_to: 'AW-18079592307/WgXqCNuZ3p8cEPPegq1D',
+        value: 1.0,
+        currency: 'EUR',
+      });
+    }
+
     fetch('/api/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
